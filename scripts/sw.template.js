@@ -6,6 +6,20 @@ const PRECACHE = __PRECACHE__
 
 const scopeUrl = (path) => new URL(path, self.registration.scope).toString()
 
+// A response that followed a redirect (e.g. /index.html -> /) cannot be used
+// to answer a navigation request, or the browser shows ERR_FAILED. Rebuild it.
+function cleanResponse(response) {
+  if (!response.redirected) return Promise.resolve(response)
+  return response.blob().then(
+    (body) =>
+      new Response(body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+      }),
+  )
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
@@ -47,9 +61,9 @@ self.addEventListener('fetch', (event) => {
   if (request.mode === 'navigate') {
     event.respondWith(
       caches
-        .match(scopeUrl('index.html'))
-        .then((cached) => cached || caches.match(scopeUrl('./')))
-        .then((cached) => cached || fetch(request)),
+        .match(scopeUrl('./'))
+        .then((cached) => cached || caches.match(scopeUrl('index.html')))
+        .then((cached) => (cached ? cleanResponse(cached) : fetch(request))),
     )
     return
   }
@@ -58,7 +72,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(request, { ignoreSearch: true }).then(
       (cached) =>
-        cached ||
+        (cached ? cleanResponse(cached) : null) ||
         fetch(request).then((response) => {
           if (response.ok) {
             const copy = response.clone()
