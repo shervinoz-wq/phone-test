@@ -1,16 +1,16 @@
 {
-  "name": "iphone-phone-pwa",
+  "name": "iphone-phone",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "typecheck": "tsc -b",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

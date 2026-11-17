@@ -1,0 +1,812 @@
+/* ---------- Push transition for the contact page ---------- */
+.push {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: var(--tint);
+  transform: translateX(100%);
+  transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: -10px 0 28px rgba(0, 0, 0, 0.12);
+}
+
+.push.is-open {
+  transform: none;
+}
+
+/* ---------- Keypad (iPhone 13: keys 80pt, pitch 102 x 98pt) ---------- */
+.keypad-page {
+  --key: clamp(52px, min(20.5cqw, 9.5dvh), 80px);
+  padding-bottom: calc(var(--safe-bottom) + clamp(48px, 11.8dvh, 100px));
+}
+
+.dial-top {
+  position: relative;
+  flex: 1;
+  min-height: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: calc(max(var(--safe-top), 24px) + 30px) 24px 0;
+}
+
+.add-contact-btn {
+  position: absolute;
+  top: calc(max(var(--safe-top), 24px) + 3px);
+  right: 14px;
+  display: flex;
+  padding: 4px;
+  color: #000;
+}
+
+.add-contact-btn:active {
+  opacity: 0.4;
+}
+
+.dial-number {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+.dial-sub {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+/* Contact suggestion card (shown while dialing) */
+.suggest-card {
+  width: 278px;
+  max-width: 100%;
+  max-height: 250px;
+  overflow-y: auto;
+  border-radius: 22px;
+  background: rgba(252, 252, 253, 0.96);
+  border: 0.5px solid rgba(0, 0, 0, 0.07);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.09),
+    0 1px 3px rgba(0, 0, 0, 0.05);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  animation: suggest-in 0.2s ease-out;
+}
+
+@keyframes suggest-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+.suggest-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 41px;
+  padding: 0 16px 0 14px;
+  font-size: 17px;
+  color: #8a8a8e;
+  text-align: left;
+}
+
+.suggest-row:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.suggest-row + .suggest-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 0.5px;
+  background: rgba(60, 60, 67, 0.2);
+}
+
+.suggest-row .sg-ico {
+  flex: none;
+  color: #000;
+}
+
+.sg-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  unicode-bidi: plaintext;
+  text-align: start;
+}
+
+.sg-num {
+  flex: none;
+  white-space: nowrap;
+}
+
+.sg-num b {
+  font-weight: 400;
+  color: #000;
+}
+
+.sg-more {
+  flex: 1;
+}
+
+.link-btn {
+  color: var(--blue);
+  font-size: 16px;
+}
+
+.link-btn:active {
+  opacity: 0.4;
+}
+
+.dial-grid,
+.dial-actions {
+  display: grid;
+  grid-template-columns: repeat(3, var(--key));
+  justify-content: center;
+  column-gap: calc(var(--key) * 0.265);
+}
+
+.dial-grid {
+  row-gap: calc(var(--key) * 0.225);
+}
+
+.dial-actions {
+  align-items: center;
+  margin-top: calc(var(--key) * 0.37);
+}
+
+.dial-spacer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--key);
+}
+
+.call-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--key);
+  height: var(--key);
+  border-radius: 50%;
+  background: rgb(47, 191, 78);
+  color: #fff;
+  will-change: transform;
+}
+
+.backspace-btn {
+  display: flex;
+  padding: 14px;
+}
+
+.backspace-btn:active {
+  opacity: 0.5;
+}
+
+.dial-key {
+  position: relative;
+  width: var(--key);
+  height: var(--key);
+  border-radius: 50%;
+  color: #000;
+  background: radial-gradient(circle at 50% 36%, #ffffff 0%, #ffffff 58%, #f0f0f2 100%);
+  border: 1px solid rgba(60, 60, 67, 0.17);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 1),
+    inset 0 -4px 10px rgba(0, 0, 0, 0.035),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  touch-action: manipulation;
+}
+
+/* white glow that fades in/out during the press animation */
+.key-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dial-key {
+  will-change: transform;
+}
+
+.dial-key .digit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - var(--key) * 0.083);
+  transform: translateY(-50%);
+  font-size: calc(var(--key) * 0.45);
+  line-height: 1;
+  text-align: center;
+  font-weight: 400;
+}
+
+.dial-key .letters {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + var(--key) * 0.21);
+  transform: translateY(-50%);
+  text-align: center;
+  font-size: calc(var(--key) * 0.135);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  padding-left: 0.2em;
+  color: inherit;
+}
+
+.dial-key[aria-label='0'] .letters {
+  font-size: calc(var(--key) * 0.2);
+  font-weight: 700;
+}
+
+.dial-key.star .digit,
+.dial-key[aria-label='pound'] .digit {
+  top: 50%;
+}
+
+.dial-key.star .digit {
+  transform: translateY(-34%);
+  font-size: calc(var(--key) * 0.6);
+}
+
+.dial-key.dark {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: transparent;
+  box-shadow: none;
+  color: #fff;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.dial-key.dark.down {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.dial-key.dark .letters {
+  color: #fff;
+}
+
+/* ---------- Contact details ---------- */
+.detail-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px 18px;
+}
+
+.detail-name {
+  font-size: 28px;
+  line-height: 1.25;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.detail-company {
+  margin-top: -6px;
+  font-size: 15px;
+  color: var(--secondary);
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 0 18px 20px;
+}
+
+.quick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 66px;
+  border-radius: 22px;
+  background: var(--card);
+  color: var(--blue);
+  font-size: 11px;
+}
+
+.quick:active {
+  background: #e5e5ea;
+}
+
+.card-row.field {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  min-height: 62px;
+}
+
+.field-label {
+  font-size: 13px;
+  color: var(--label);
+}
+
+.field-value {
+  font-size: 17px;
+  line-height: 1.35;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.field-value.link {
+  color: var(--blue);
+}
+
+/* ---------- Call screens ---------- */
+.call-screen {
+  --key: clamp(58px, min(19cqw, 9dvh), 78px);
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--safe-top) + 50px) 24px calc(var(--safe-bottom) + 34px);
+  color: #fff;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(120, 124, 140, 0.55) 0%, transparent 70%),
+    linear-gradient(180deg, #5a5c66 0%, #35363c 48%, #1b1c20 100%);
+  transform: translateY(100%);
+  transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.call-screen.is-open {
+  transform: none;
+}
+
+/* Outgoing call: no slide – the wallpaper cross-fades in over the keypad (from recorded frames) */
+.call-screen.failed {
+  transform: none;
+  opacity: 0;
+  transition: opacity 0.55s cubic-bezier(0.3, 0.1, 0.2, 1);
+}
+.call-screen.failed.is-open {
+  opacity: 1;
+}
+.call-screen.failed .call-top,
+.call-screen.failed .incoming-actions {
+  opacity: 0;
+  transition: opacity 0.5s ease 0.12s;
+}
+.call-screen.failed.is-open .call-top,
+.call-screen.failed.is-open .incoming-actions {
+  opacity: 1;
+}
+/* silky light swirl that is visible mid-fade and then dissolves */
+.call-screen.failed::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(150% 62% at 8% 22%, transparent 58%, rgba(255, 255, 255, 0.28) 60%, transparent 68%),
+    radial-gradient(120% 70% at 105% 48%, transparent 56%, rgba(255, 255, 255, 0.22) 58%, transparent 67%),
+    radial-gradient(140% 60% at 0% 80%, transparent 60%, rgba(255, 255, 255, 0.2) 62%, transparent 70%);
+}
+.call-screen.failed.is-open::before {
+  animation: call-swirl 1.1s ease-out forwards;
+}
+@keyframes call-swirl {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* "Call failed" – warm blurred wallpaper like the reference */
+.call-screen.failed {
+  padding-bottom: calc(var(--safe-bottom) + 30px);
+  background:
+    radial-gradient(85% 45% at 0% 28%, rgba(122, 88, 48, 0.95) 0%, transparent 72%),
+    radial-gradient(90% 50% at 100% 62%, rgba(110, 100, 96, 0.95) 0%, transparent 72%),
+    linear-gradient(165deg, #5c4a3a 0%, #5d5551 45%, #403b48 78%, #565764 100%);
+}
+
+.call-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  text-align: center;
+}
+
+.call-top .avatar {
+  margin-bottom: 14px;
+}
+
+.call-name {
+  max-width: 100%;
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.call-screen.failed .call-name {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.call-status {
+  font-size: 19px;
+  color: rgba(255, 255, 255, 0.72);
+  font-variant-numeric: tabular-nums;
+}
+
+.call-status.failed-label {
+  font-size: 22px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.call-typed {
+  min-height: 1.3em;
+  margin-top: 12px;
+  font-size: 30px;
+  letter-spacing: 1px;
+}
+
+.call-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+  width: 100%;
+}
+
+.call-grid {
+  display: grid;
+  grid-template-columns: repeat(3, var(--key));
+  justify-content: center;
+  gap: 22px calc(var(--key) * 0.55);
+}
+
+.call-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, var(--key));
+  justify-content: center;
+  gap: calc(var(--key) * 0.2) calc(var(--key) * 0.55);
+}
+
+.call-ctrl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: var(--key);
+  color: #fff;
+}
+
+.call-ctrl.disabled {
+  opacity: 0.45;
+}
+
+.call-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--key);
+  height: var(--key);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition: background 0.15s;
+}
+
+.call-ctrl:active .call-circle {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.call-ctrl.active .call-circle {
+  background: #fff;
+  color: #1c1c1e;
+}
+
+.call-circle.red {
+  background: var(--red);
+}
+
+.call-circle.green {
+  background: #249f46;
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4);
+}
+
+.call-circle.gray {
+  background: rgba(190, 190, 200, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.call-label {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.call-end-row {
+  display: grid;
+  grid-template-columns: repeat(3, var(--key));
+  justify-content: center;
+  align-items: center;
+  column-gap: calc(var(--key) * 0.55);
+}
+
+.call-end-spacer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hide-keypad {
+  font-size: 18px;
+  color: #fff;
+}
+
+.incoming-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 15px;
+  margin-bottom: 24px;
+}
+
+.incoming-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.incoming-side .call-circle {
+  width: 78px;
+  height: 78px;
+}
+
+/* ---------- Device identifiers (*#06#) ---------- */
+.sheet.imei-sheet {
+  background: #fff;
+}
+
+.imei-page {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.imei-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.imei-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.imei-inner {
+  padding: 88px 35px calc(var(--safe-bottom) + 118px);
+  /* always a little scroll range, so the large title can collapse into the bar */
+  min-height: calc(100% + 96px);
+  will-change: transform;
+}
+
+.imei-title {
+  margin: 0;
+  font-size: 21px;
+  line-height: 25px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.imei-sub {
+  margin: 0;
+  font-size: 21px;
+  line-height: 26.5px;
+  color: #8e8e93;
+  letter-spacing: -0.2px;
+}
+
+.imei-block {
+  margin-top: 42px;
+  text-align: center;
+}
+
+.imei-title + .imei-sub + .imei-block {
+  margin-top: 31px;
+}
+
+.imei-label {
+  height: 20px;
+  line-height: 20px;
+  font-size: 15px;
+  white-space: nowrap;
+  color: #000;
+}
+
+.imei-barcode {
+  display: block;
+  margin: 25px auto 0;
+}
+
+.imei-close {
+  position: absolute;
+  top: 16px;
+  left: 17px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 41px;
+  height: 41px;
+  border-radius: 50%;
+  color: #000;
+  background: rgba(248, 248, 250, 0.96);
+  border: 0.5px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.imei-close:active {
+  opacity: 0.6;
+}
+
+.imei-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 0 32px max(20px, calc(var(--safe-bottom) - 4px)) 33px;
+  pointer-events: none;
+}
+
+.imei-reader {
+  pointer-events: auto;
+  width: 100%;
+  height: 49px;
+  border-radius: 25px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0, 136, 255, 0.28);
+}
+
+.imei-reader:active {
+  opacity: 0.75;
+}
+
+/* Inline title bar: appears when the large title scrolls up */
+.imei-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 70px 0;
+  background: rgba(255, 255, 255, 0);
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0);
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    backdrop-filter 0.2s,
+    -webkit-backdrop-filter 0.2s;
+  pointer-events: none;
+}
+
+.imei-bar.on {
+  background: rgba(255, 255, 255, 0.82);
+  border-bottom-color: rgba(60, 60, 67, 0.22);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.imei-bar-title {
+  font-size: 17px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.imei-bar.on .imei-bar-title {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Device identifiers editor ---------- */
+.ids-note {
+  margin: 0 28px 14px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--secondary, #6c6c70);
+}
+
+.ids-row {
+  padding: 0 18px;
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.18);
+}
+
+.ids-row:last-child {
+  border-bottom: 0;
+}
+
+.ids-line {
+  display: flex;
+  align-items: center;
+  min-height: 50px;
+  gap: 12px;
+}
+
+.ids-label {
+  flex: none;
+  width: 52px;
+  font-size: 15px;
+  color: var(--blue);
+}
+
+.ids-line input {
+  flex: 1;
+  min-width: 0;
+  height: 50px;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2px;
+}
+
+.ids-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 0 8px 64px;
+  font-size: 12.5px;
+  color: var(--red, #ff3b30);
+}
+
+.ids-fix {
+  font-size: 12.5px;
+  color: var(--blue);
+}

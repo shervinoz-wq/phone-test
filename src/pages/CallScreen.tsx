@@ -1,0 +1,190 @@
+import { useEffect, useRef, useState } from 'react'
+import { Avatar } from '../components/Avatar'
+import { DialKey } from '../components/DialKey'
+import { DIAL_KEYS } from '../components/dialKeys'
+import {
+  CloseIcon,
+  EndCallIcon,
+  MicOffIcon,
+  PersonCropIcon,
+  PersonPlusIcon,
+  PhoneIcon,
+  SpeakerIcon,
+  VideoIcon,
+} from '../components/Icons'
+import { useApp } from '../hooks/useApp'
+import { useStore } from '../hooks/useStore'
+import { useTransitionMount } from '../hooks/useTransitionMount'
+import type { CallKind, CallSession } from '../types'
+import { clock, displayName, findByNumber } from '../utils/format'
+import { playTone } from '../utils/sound'
+
+type Phase = 'calling' | 'connected' | 'incoming' | 'failed'
+
+interface Props {
+  session: CallSession
+  open: boolean
+  onEnd: (result: { kind: CallKind; duration: number }) => void
+}
+
+export function CallScreen({ session, open, onEnd }: Props) {
+  const { state } = useStore()
+  const app = useApp()
+  const { mounted, shown } = useTransitionMount(open, 380)
+
+  const contact = session.contactId
+    ? state.contacts.find((c) => c.id === session.contactId)
+    : findByNumber(state.contacts, session.number)
+  const title = contact ? displayName(contact) : session.number
+
+  const [phase, setPhase] = useState<Phase>(session.mode === 'incoming' ? 'incoming' : 'failed')
+  const [seconds, setSeconds] = useState(0)
+  const [muted, setMuted] = useState(false)
+  const [speaker, setSpeaker] = useState(false)
+  const [showKeypad, setShowKeypad] = useState(false)
+  const [typed, setTyped] = useState('')
+  const ended = useRef(false)
+
+  // Call timer.
+  useEffect(() => {
+    if (phase !== 'connected') return
+    const id = window.setInterval(() => setSeconds((s) => s + 1), 1000)
+    return () => window.clearInterval(id)
+  }, [phase])
+
+  const finish = (kind: CallKind) => {
+    if (ended.current) return
+    ended.current = true
+    onEnd({ kind, duration: phase === 'connected' ? seconds : 0 })
+  }
+
+  const hangUp = () => finish(session.mode === 'incoming' ? (phase === 'connected' ? 'incoming' : 'missed') : 'outgoing')
+
+  if (!mounted) return null
+
+  const status =
+    phase === 'calling'
+      ? 'calling…'
+      : phase === 'connected'
+        ? clock(seconds)
+        : phase === 'failed'
+          ? 'Call failed'
+          : contact
+            ? 'mobile'
+            : 'unknown'
+
+  const toggle = (label: string, active: boolean, set: (v: boolean) => void, icon: React.ReactNode) => (
+    <button type="button" className={`call-ctrl${active ? ' active' : ''}`} aria-pressed={active} onClick={() => set(!active)}>
+      <span className="call-circle">{icon}</span>
+      <span className="call-label">{label}</span>
+    </button>
+  )
+  const plain = (label: string, icon: React.ReactNode, onClick: () => void, disabled = false) => (
+    <button type="button" className={`call-ctrl${disabled ? ' disabled' : ''}`} onClick={onClick}>
+      <span className="call-circle">{icon}</span>
+      <span className="call-label">{label}</span>
+    </button>
+  )
+
+  return (
+    <div className={`call-screen${shown ? ' is-open' : ''}${phase === 'failed' ? ' failed' : ''}`} role="dialog" aria-label="Call">
+      <div className="call-top">
+        {contact && phase === 'incoming' && <Avatar contact={contact} size={92} />}
+        {phase === 'failed' ? (
+          <>
+            <div className="call-status failed-label">{status}</div>
+            <h1 className="call-name">{title}</h1>
+          </>
+        ) : (
+          <>
+            <h1 className="call-name">{title}</h1>
+            <div className="call-status">{status}</div>
+          </>
+        )}
+        {showKeypad && <div className="call-typed">{typed || '\u00A0'}</div>}
+      </div>
+
+      {phase === 'failed' ? (
+        <div className="incoming-actions">
+          <div className="incoming-side">
+            <button type="button" className="call-circle gray" aria-label="Cancel" onClick={() => finish('outgoing')}>
+              <CloseIcon size={34} />
+            </button>
+            <span className="call-label">Cancel</span>
+          </div>
+          <div className="incoming-side">
+            <button type="button" className="call-circle green" aria-label="Call Back" onClick={() => setPhase('failed')}>
+              <PhoneIcon size={34} />
+            </button>
+            <span className="call-label">Call Back</span>
+          </div>
+        </div>
+      ) : phase === 'incoming' ? (
+        <div className="incoming-actions">
+          <div className="incoming-side">
+            <button type="button" className="call-circle red" aria-label="Decline" onClick={() => finish('missed')}>
+              <EndCallIcon size={32} />
+            </button>
+            <span className="call-label">Decline</span>
+          </div>
+          <div className="incoming-side">
+            <button type="button" className="call-circle green" aria-label="Accept" onClick={() => setPhase('connected')}>
+              <PhoneIcon size={32} />
+            </button>
+            <span className="call-label">Accept</span>
+          </div>
+        </div>
+      ) : (
+        <div className="call-bottom">
+          {showKeypad ? (
+            <div className="call-keypad">
+              {DIAL_KEYS.map(([d, l]) => (
+                <DialKey
+                  key={d}
+                  digit={d}
+                  letters={l}
+                  dark
+                  onPress={(k) => {
+                    if (state.settings.keypadSounds) playTone(k)
+                    setTyped((t) => (t.length > 24 ? t : t + k))
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="call-grid">
+              {toggle('mute', muted, setMuted, <MicOffIcon size={32} />)}
+              {plain('keypad', <KeypadGlyph />, () => setShowKeypad(true))}
+              {toggle('speaker', speaker, setSpeaker, <SpeakerIcon size={32} />)}
+              {plain('add call', <PersonPlusIcon size={30} />, () => app.toast('Add Call is not available in this demo'))}
+              {plain('FaceTime', <VideoIcon size={32} />, () => app.toast('FaceTime is not available in this demo'))}
+              {plain('contacts', <PersonCropIcon size={32} />, () => app.toast('Contacts are not available during the demo call'))}
+            </div>
+          )}
+
+          <div className="call-end-row">
+            <span className="call-end-spacer" />
+            <button type="button" className="call-circle red" aria-label="End call" onClick={hangUp}>
+              <EndCallIcon size={34} />
+            </button>
+            <span className="call-end-spacer">
+              {showKeypad && (
+                <button type="button" className="hide-keypad" onClick={() => setShowKeypad(false)}>
+                  Hide
+                </button>
+              )}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function KeypadGlyph() {
+  return (
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      {[5, 12, 19].flatMap((y) => [5, 12, 19].map((x) => <circle key={`${x}${y}`} cx={x} cy={y} r="2.2" />))}
+    </svg>
+  )
+}
