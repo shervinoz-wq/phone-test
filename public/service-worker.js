@@ -11,7 +11,17 @@ const BUILD_ID = '__BUILD_ID__'
 const PRECACHE = /*__PRECACHE__*/ []
 const CACHE = 'phone-' + BUILD_ID
 const SCOPE = self.registration.scope
+const ROOT = new URL('./', SCOPE).href
 const INDEX = new URL('index.html', SCOPE).href
+
+// A response that followed a redirect (Cloudflare redirects /index.html -> /)
+// must never be used to answer a navigation: the browser shows ERR_FAILED.
+// Rebuild it as a clean, non-redirected response.
+async function clean(res) {
+  if (!res || !res.redirected) return res
+  const body = await res.blob()
+  return new Response(body, { status: res.status, statusText: res.statusText, headers: res.headers })
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -19,8 +29,13 @@ self.addEventListener('install', (event) => {
       const cache = await caches.open(CACHE)
       // Cache everything (HTML, JS, CSS, fonts, icons) up-front so the
       // very first launch is enough to work offline afterwards.
-      await cache.addAll(
-        PRECACHE.map((url) => new Request(new URL(url, SCOPE).href, { cache: 'reload' })),
+      await Promise.all(
+        PRECACHE.map(async (url) => {
+          const href = new URL(url, SCOPE).href
+          const res = await fetch(new Request(href, { cache: 'reload' }))
+          if (!res.ok) throw new Error('precache failed: ' + href)
+          await cache.put(href, await clean(res))
+        }),
       )
       await self.skipWaiting()
     })(),
@@ -46,10 +61,18 @@ self.addEventListener('fetch', (event) => {
   // Never touch cross-origin requests (the app makes none).
   if (url.origin !== self.location.origin) return
 
-  // Page navigations: always serve the cached app shell.
+  // Page navigations: serve the cached app shell (cleaned of redirects).
   if (req.mode === 'navigate') {
     event.respondWith(
-      caches.match(INDEX).then((hit) => hit || fetch(req).catch(() => offlineResponse())),
+      (async () => {
+        const hit = (await caches.match(ROOT)) || (await caches.match(INDEX))
+        if (hit) return clean(hit)
+        try {
+          return await clean(await fetch(req))
+        } catch {
+          return offlineResponse()
+        }
+      })(),
     )
     return
   }
@@ -58,7 +81,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(req).then(
       (hit) =>
-        hit ||
+        (hit ? clean(hit) : null) ||
         fetch(req)
           .then((res) => {
             if (res && res.ok) {
