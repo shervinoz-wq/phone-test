@@ -182,7 +182,7 @@
   border-radius: 50%;
   background: rgb(47, 191, 78);
   color: #fff;
-  will-change: transform;
+  pointer-events: none;
 }
 
 .backspace-btn {
@@ -209,18 +209,20 @@
   touch-action: manipulation;
 }
 
-/* white glow that fades in/out during the press animation */
+/* plain grey press feedback: appears instantly, fades out quickly on release */
 .key-fill {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: #fff;
+  background: #d1d1d6;
   opacity: 0;
   pointer-events: none;
+  transition: opacity 0.18s ease-out;
 }
 
-.dial-key {
-  will-change: transform;
+.dial-key.down .key-fill {
+  opacity: 1;
+  transition: none;
 }
 
 .dial-key .digit {
@@ -263,23 +265,6 @@
 .dial-key.star .digit {
   transform: translateY(-34%);
   font-size: calc(var(--key) * 0.6);
-}
-
-.dial-key.dark {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: transparent;
-  box-shadow: none;
-  color: #fff;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-.dial-key.dark.down {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.dial-key.dark .letters {
-  color: #fff;
 }
 
 /* ---------- Contact details ---------- */
