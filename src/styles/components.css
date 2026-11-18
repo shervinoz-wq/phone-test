@@ -1,9 +1,14 @@
 /* ---------- Glass material (iOS 26 style) ---------- */
 .glass,
 .glass-btn {
-  background: #f2f2f7;
-  border: none;
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.74);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(60, 60, 67, 0.13);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.025),
+    0 6px 16px rgba(0, 0, 0, 0.06);
 }
 
 .glass-btn {
@@ -25,6 +30,7 @@
 }
 
 .glass-btn:active,
+.search-btn:active,
 .search-close:active {
   background: rgba(225, 225, 230, 0.85);
 }
@@ -126,6 +132,9 @@
   display: flex;
   gap: 7px;
   height: var(--tab-h);
+  transition:
+    opacity 0.22s,
+    transform 0.22s;
 }
 
 .tabbar-wrap.hidden {
@@ -159,10 +168,103 @@
   color: #000;
 }
 
-/* selected tab: flat grey pill + blue content, no animation */
-.tab.selected {
+/* ---- glass lens (selection indicator) ---- */
+.lens {
+  --glass: 0;
+  position: absolute;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(180deg, #ffffff, #fbfbfd);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(60, 60, 67, calc(0.06 + var(--glass) * 0.1)),
+    0 calc(var(--glass) * 5px) calc(var(--glass) * 14px) rgba(0, 0, 0, calc(var(--glass) * 0.13));
+}
+
+/* flat grey pill; fades out while the lens is "clear glass" */
+.lens-fill {
+  position: absolute;
+  inset: 0;
   background: rgba(118, 118, 128, 0.15);
+  opacity: calc(1 - var(--glass) * 0.9);
+}
+
+.lens-layer {
+  position: absolute;
+  inset: 0;
+}
+
+/* centre: normal magnified content, fades out towards the edges while it is a bubble */
+.lens-layer.base {
+  -webkit-mask-image: radial-gradient(
+    ellipse 100% 100% at 50% 50%,
+    #000 calc(100% - var(--glass) * 48%),
+    transparent calc(100.1% - var(--glass) * 22%)
+  );
+  mask-image: radial-gradient(
+    ellipse 100% 100% at 50% 50%,
+    #000 calc(100% - var(--glass) * 48%),
+    transparent calc(100.1% - var(--glass) * 22%)
+  );
+}
+
+/* rim layers: only visible as thin strips along each edge */
+.lens-layer.top,
+.lens-layer.bottom,
+.lens-layer.left,
+.lens-layer.right {
+  opacity: var(--glass);
+  filter: blur(0.5px) saturate(1.4);
+}
+.lens-layer.top {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, transparent 26%);
+  mask-image: linear-gradient(to bottom, #000 0, transparent 26%);
+}
+.lens-layer.bottom {
+  -webkit-mask-image: linear-gradient(to top, #000 0, transparent 30%);
+  mask-image: linear-gradient(to top, #000 0, transparent 30%);
+}
+.lens-layer.left {
+  -webkit-mask-image: linear-gradient(to right, #000 0, transparent 22%);
+  mask-image: linear-gradient(to right, #000 0, transparent 22%);
+}
+.lens-layer.right {
+  -webkit-mask-image: linear-gradient(to left, #000 0, transparent 22%);
+  mask-image: linear-gradient(to left, #000 0, transparent 22%);
+}
+
+.lens-content {
+  position: absolute;
+  display: flex;
+  will-change: transform;
+}
+
+.lens-tab {
   color: var(--blue);
+  text-shadow:
+    calc(var(--glass) * -1.4px) 0 0 rgba(255, 40, 120, calc(var(--glass) * 0.35)),
+    calc(var(--glass) * 1.4px) 0 0 rgba(0, 200, 255, calc(var(--glass) * 0.5));
+}
+
+.lens-tab .tab-icon svg {
+  filter: drop-shadow(calc(var(--glass) * -1.4px) 0 0 rgba(255, 40, 120, calc(var(--glass) * 0.3)))
+    drop-shadow(calc(var(--glass) * 1.4px) 0 0 rgba(0, 200, 255, calc(var(--glass) * 0.45)));
+}
+
+/* bubble rim: bright inner edge + iridescent glints */
+.lens-rim {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: var(--glass);
+  box-shadow:
+    inset 0 3px 4px -1px rgba(255, 255, 255, 1),
+    inset 0 -4px 6px -2px rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+    inset 5px 0 7px -3px rgba(120, 200, 255, 0.7),
+    inset -5px 0 7px -3px rgba(255, 150, 210, 0.6),
+    inset 0 -6px 8px -4px rgba(255, 225, 140, 0.45),
+    inset 0 0 14px rgba(150, 160, 190, 0.18);
 }
 
 .tab-icon {
