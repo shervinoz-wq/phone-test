@@ -30,19 +30,6 @@
   padding: calc(max(var(--safe-top), 24px) + 30px) 24px 0;
 }
 
-.add-contact-btn {
-  position: absolute;
-  top: calc(max(var(--safe-top), 24px) + 3px);
-  right: 14px;
-  display: flex;
-  padding: 4px;
-  color: #000;
-}
-
-.add-contact-btn:active {
-  opacity: 0.4;
-}
-
 .dial-number {
   max-width: 100%;
   overflow: hidden;
@@ -182,16 +169,14 @@
   border-radius: 50%;
   background: rgb(47, 191, 78);
   color: #fff;
-  will-change: transform;
+  pointer-events: none;
 }
 
 .backspace-btn {
   display: flex;
   padding: 14px;
-}
-
-.backspace-btn:active {
-  opacity: 0.5;
+  transition: none;
+  animation: none;
 }
 
 .dial-key {
@@ -200,27 +185,26 @@
   height: var(--key);
   border-radius: 50%;
   color: #000;
-  background: radial-gradient(circle at 50% 36%, #ffffff 0%, #ffffff 58%, #f0f0f2 100%);
-  border: 1px solid rgba(60, 60, 67, 0.17);
-  box-shadow:
-    inset 0 2px 3px rgba(255, 255, 255, 1),
-    inset 0 -4px 10px rgba(0, 0, 0, 0.035),
-    0 1px 2px rgba(0, 0, 0, 0.05);
+  background: #f2f2f7;
+  border: none;
+  box-shadow: none;
   touch-action: manipulation;
 }
 
-/* white glow that fades in/out during the press animation */
+/* plain grey press feedback: appears instantly, fades out quickly on release */
 .key-fill {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: #fff;
+  background: #d1d1d6;
   opacity: 0;
   pointer-events: none;
+  transition: opacity 0.18s ease-out;
 }
 
-.dial-key {
-  will-change: transform;
+.dial-key.down .key-fill {
+  opacity: 1;
+  transition: none;
 }
 
 .dial-key .digit {
@@ -263,23 +247,6 @@
 .dial-key.star .digit {
   transform: translateY(-34%);
   font-size: calc(var(--key) * 0.6);
-}
-
-.dial-key.dark {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: transparent;
-  box-shadow: none;
-  color: #fff;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-.dial-key.dark.down {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.dial-key.dark .letters {
-  color: #fff;
 }
 
 /* ---------- Contact details ---------- */
