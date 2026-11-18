@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { DialKey } from '../components/DialKey'
 import { DIAL_KEYS } from '../components/dialKeys'
-import { AddContactIcon, BackspaceFilledIcon, PhoneIcon } from '../components/Icons'
+import { BackspaceFilledIcon, PhoneIcon } from '../components/Icons'
 import { playTone } from '../utils/sound'
 
 const MAX_LENGTH = 32
 
 /**
  * Demo keypad: digits, sound, 0-hold = "+", backspace (hold = repeat).
- * The call button and the add-contact icon are inert, and no dial code
+ * The call button is inert, there is no add-contact icon, and no dial code
  * (*#06#, *1*1#, ...) triggers anything.
  */
 export function KeypadPage() {
@@ -46,11 +46,6 @@ export function KeypadPage() {
   return (
     <div className="page keypad-page">
       <div className="dial-top">
-        {number && (
-          <button type="button" className="add-contact-btn" aria-label="Add to contacts" tabIndex={-1}>
-            <AddContactIcon size={27} />
-          </button>
-        )}
         <div className="dial-number" style={{ fontSize: size }} aria-live="polite">
           {number || '\u00A0'}
         </div>
