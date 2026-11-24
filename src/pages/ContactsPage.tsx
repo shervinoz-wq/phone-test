@@ -47,6 +47,11 @@ export function ContactsPage({ title, listId, onBack }: Props) {
       </header>
 
       <BandScroll>
+        {contacts.length === 0 && (
+          <div className="empty center">
+            <div className="empty-title">No Contacts</div>
+          </div>
+        )}
         <ul className="list contact-list">
           {contacts.map((c) => (
             <li key={c.id} className="contact-item">
