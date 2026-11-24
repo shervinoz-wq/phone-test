@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Avatar } from '../components/Avatar'
 import { BandScroll } from '../components/BandScroll'
-import { ChevronLeftIcon, PlusIcon } from '../components/Icons'
+import { ChevronLeftIcon, PersonFillCircleIcon, PlusIcon } from '../components/Icons'
 import { useApp } from '../hooks/useApp'
 import { useStore } from '../hooks/useStore'
 import type { Contact } from '../types'
@@ -49,7 +49,16 @@ export function ContactsPage({ title, listId, onBack }: Props) {
       <BandScroll>
         {contacts.length === 0 && (
           <div className="empty center">
+            <PersonFillCircleIcon size={56} className="empty-avatar" />
             <div className="empty-title">No Contacts</div>
+            <p>Contacts you’ve added will appear here.</p>
+            <button
+              type="button"
+              className="link-btn big"
+              onClick={(e) => app.newContact(undefined, { morph: 'center', from: e.currentTarget.getBoundingClientRect() })}
+            >
+              Create New Contact
+            </button>
           </div>
         )}
         <ul className="list contact-list">

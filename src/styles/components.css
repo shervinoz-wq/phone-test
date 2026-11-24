@@ -1228,3 +1228,19 @@ button.card-row:active {
   text-transform: uppercase;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
+
+
+/* Empty Contacts state: grey person avatar above the title */
+.empty-avatar {
+  margin-bottom: 18px;
+  color: #8e8e93;
+}
+
+.empty.center .empty-title {
+  margin-bottom: 8px;
+}
+
+.empty.center .link-btn.big {
+  margin-top: 26px;
+  cursor: pointer;
+}
