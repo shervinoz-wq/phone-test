@@ -7,6 +7,15 @@ export interface Contact {
   company: string
   phone: string
   notes: string
+  birthday?: string
+  anniversary?: string
+  blocked?: boolean
+}
+
+/** A user-created list shown on the Lists page (contacts are not assigned to lists in this demo). */
+export interface ContactList {
+  id: string
+  name: string
 }
 
 export type CallKind = 'outgoing' | 'incoming' | 'missed'
@@ -40,6 +49,7 @@ export interface Settings {
 export interface PhoneState {
   contacts: Contact[]
   favourites: string[]
+  lists: ContactList[]
   recents: CallRecord[]
   settings: Settings
   lastDialed: string

@@ -1,12 +1,15 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type Dispatch, type ReactNode } from 'react'
 import { createSeedState } from '../data/seed'
-import type { CallRecord, Contact, PhoneState, Settings } from '../types'
+import type { CallRecord, Contact, ContactList, PhoneState, Settings } from '../types'
 
 const STORAGE_KEY = 'iphone-phone:v2'
 
 export type Action =
   | { type: 'contact/save'; contact: Contact }
   | { type: 'contact/delete'; id: string }
+  | { type: 'list/add'; list: ContactList }
+  | { type: 'list/rename'; id: string; name: string }
+  | { type: 'list/delete'; id: string }
   | { type: 'favourite/add'; id: string }
   | { type: 'favourite/remove'; id: string }
   | { type: 'recent/add'; record: CallRecord }
@@ -35,6 +38,12 @@ function reducer(state: PhoneState, action: Action): PhoneState {
         favourites: state.favourites.filter((f) => f !== action.id),
         recents: state.recents.map((r) => (r.contactId === action.id ? { ...r, contactId: undefined } : r)),
       }
+    case 'list/add':
+      return { ...state, lists: [...state.lists, action.list] }
+    case 'list/rename':
+      return { ...state, lists: state.lists.map((l) => (l.id === action.id ? { ...l, name: action.name } : l)) }
+    case 'list/delete':
+      return { ...state, lists: state.lists.filter((l) => l.id !== action.id) }
     case 'favourite/add':
       return state.favourites.includes(action.id)
         ? state
@@ -65,7 +74,7 @@ function load(): PhoneState {
     if (raw) {
       const parsed = JSON.parse(raw) as PhoneState
       if (Array.isArray(parsed.contacts) && Array.isArray(parsed.recents)) {
-        return { ...createSeedState(), ...parsed, recents: [], settings: {
+        return { ...createSeedState(), ...parsed, lists: Array.isArray(parsed.lists) ? parsed.lists : [], recents: [], settings: {
             ...createSeedState().settings,
             ...parsed.settings,
             deviceIds: { ...createSeedState().settings.deviceIds, ...parsed.settings?.deviceIds },

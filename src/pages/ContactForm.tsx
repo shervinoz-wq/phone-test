@@ -19,8 +19,6 @@ const EXTRA_ROWS = ['add email', 'add pronouns']
 const MORE_ROWS = [
   'add url',
   'add address',
-  'add birthday',
-  'add date',
   'add related name',
   'add social profile',
   'add instant message',
@@ -33,6 +31,10 @@ export function ContactForm({ contact, prefillNumber, title, onCancel, onSave, o
   const [company, setCompany] = useState(contact?.company ?? '')
   const [phone, setPhone] = useState(contact?.phone ?? prefillNumber ?? '')
   const [showPhone, setShowPhone] = useState(!!(contact?.phone || prefillNumber))
+  const [birthday, setBirthday] = useState(contact?.birthday ?? '')
+  const [showBirthday, setShowBirthday] = useState(!!contact?.birthday)
+  const [anniversary, setAnniversary] = useState(contact?.anniversary ?? '')
+  const [showAnniv, setShowAnniv] = useState(!!contact?.anniversary)
   const [notes, setNotes] = useState(contact?.notes ?? '')
 
   const canSave = !!(first.trim() || last.trim() || company.trim() || phone.trim())
@@ -47,6 +49,9 @@ export function ContactForm({ contact, prefillNumber, title, onCancel, onSave, o
       company: company.trim(),
       phone: phone.trim(),
       notes: notes.trim(),
+      birthday: birthday || undefined,
+      anniversary: anniversary || undefined,
+      blocked: contact?.blocked,
     })
   }
 
@@ -123,6 +128,22 @@ export function ContactForm({ contact, prefillNumber, title, onCancel, onSave, o
           <ChevronRightIcon size={14} className="chev" />
         </button>
 
+        {showBirthday ? (
+          <div className="pill-row field">
+            <span className="input-label">birthday</span>
+            <input type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} />
+          </div>
+        ) : (
+          addRow('add birthday', () => setShowBirthday(true))
+        )}
+        {showAnniv ? (
+          <div className="pill-row field">
+            <span className="input-label">anniversary</span>
+            <input type="date" value={anniversary} onChange={(e) => setAnniversary(e.target.value)} />
+          </div>
+        ) : (
+          addRow('add date', () => setShowAnniv(true))
+        )}
         {MORE_ROWS.map((l) => addRow(l))}
 
         <div className="round-card notes">

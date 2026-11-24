@@ -13,7 +13,9 @@ import { ContactForm } from './pages/ContactForm'
 import { ContactPicker } from './pages/ContactPicker'
 import { DeviceIdsForm } from './pages/DeviceIdsForm'
 import { ImeiSheet } from './pages/ImeiSheet'
-import { ContactsPage } from './pages/ContactsPage'
+import { BlockPopover } from './pages/BlockPopover'
+import { ShareContactSheet } from './pages/ShareContactSheet'
+import { ContactsTab } from './pages/ContactsTab'
 import { CallsPage } from './pages/CallsPage'
 import { KeypadPage } from './pages/KeypadPage'
 import { SearchOverlay } from './pages/SearchOverlay'
@@ -59,6 +61,10 @@ function Shell() {
   const [imeiOpen, setImeiOpen] = useState(false)
   const [idsOpen, setIdsOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [shareId, setShareId] = useState<string | null>(null)
+  const [shareOpen, setShareOpen] = useState(false)
+  const [blockId, setBlockId] = useState<string | null>(null)
+  const [blockOpen, setBlockOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -84,6 +90,8 @@ function Shell() {
   /* ---------- contact detail (push transition) ---------- */
   const detailContact = detail ? state.contacts.find((c) => c.id === detail.id) : undefined
   const { mounted: detailMounted, shown: detailShown } = useTransitionMount(detailOpen && !!detailContact, 340)
+
+  const shareContact = shareId ? state.contacts.find((c) => c.id === shareId) : undefined
 
   /* ---------- API for pages ---------- */
   const toast = useCallback((message: string) => {
@@ -125,6 +133,21 @@ function Shell() {
         setForm({ contact: state.contacts.find((c) => c.id === id) ?? null })
         setFormOpen(true)
       },
+      shareContact: (id) => {
+        setShareId(id)
+        setShareOpen(true)
+      },
+      blockContact: (id) => {
+        const c = state.contacts.find((x) => x.id === id)
+        if (!c) return
+        if (c.blocked) {
+          dispatch({ type: 'contact/save', contact: { ...c, blocked: false } })
+          toast('Contact unblocked')
+          return
+        }
+        setBlockId(id)
+        setBlockOpen(true)
+      },
       pickFavourite: () => setPickOpen(true),
       editMyCard: () => {
         setFormMorph(undefined)
@@ -163,7 +186,7 @@ function Shell() {
 
   const tabs: [TabId, ReactElement][] = [
     ['calls', <CallsPage key="r" />],
-    ['contacts', <ContactsPage key="c" />],
+    ['contacts', <ContactsTab key="c" />],
     ['keypad', <KeypadPage key="k" />],
   ]
 
@@ -181,6 +204,9 @@ function Shell() {
               </span>
             </div>
             <div className="island" aria-hidden />
+            <div className="demo-ribbon" aria-hidden>
+              <span>ios dialer demo</span>
+            </div>
 
             <main className="panels">
               {tabs.map(([id, el]) => (
@@ -238,6 +264,23 @@ function Shell() {
                         }
                       : undefined
                   }
+                />
+              )}
+            </Sheet>
+
+            <Sheet open={shareOpen} onClose={() => setShareOpen(false)}>
+              {shareContact && (
+                <ShareContactSheet
+                  contact={shareContact}
+                  onDone={async (text) => {
+                    setShareOpen(false)
+                    try {
+                      if (navigator.share) await navigator.share({ title: displayName(shareContact), text })
+                      else toast('Sharing is not available on this device')
+                    } catch {
+                      /* dismissed */
+                    }
+                  }}
                 />
               )}
             </Sheet>
@@ -304,6 +347,17 @@ function Shell() {
             <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
             {call && <CallScreen key={call.session.number + call.session.mode} session={call.session} open={call.open} onEnd={endCall} />}
+
+            <BlockPopover
+              open={blockOpen}
+              onClose={() => setBlockOpen(false)}
+              onConfirm={() => {
+                const c = state.contacts.find((x) => x.id === blockId)
+                if (!c) return
+                dispatch({ type: 'contact/save', contact: { ...c, blocked: true } })
+                toast('Contact blocked')
+              }}
+            />
 
             <Toast message={toastMsg} />
             <div className="home-indicator" aria-hidden />

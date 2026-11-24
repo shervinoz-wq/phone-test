@@ -599,6 +599,10 @@
   display: flex;
   flex-direction: column;
   background: #fff;
+  /* the blurred title bar must not poke out of the sheet's rounded top corners */
+  overflow: hidden;
+  border-radius: 38px 38px 0 0;
+  clip-path: inset(0 round 38px 38px 0 0);
 }
 
 .imei-scroll {
@@ -717,6 +721,7 @@
   right: 0;
   z-index: 2;
   height: 65px;
+  border-radius: 38px 38px 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -809,4 +814,786 @@
 .ids-fix {
   font-size: 12.5px;
   color: var(--blue);
+}
+
+/* =====================================================================
+   Contacts tab: Lists -> Contacts navigation stack
+   ===================================================================== */
+.nav-stack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.stack-root {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.stack-root.covered {
+  transform: translateX(-28%);
+}
+
+.stack-dim {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.stack-root.covered .stack-dim {
+  opacity: 1;
+}
+
+.stack-top {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: var(--bg);
+  transform: translateX(100%);
+  visibility: hidden;
+  box-shadow: -10px 0 28px rgba(0, 0, 0, 0.12);
+  transition:
+    transform 0.36s cubic-bezier(0.32, 0.72, 0, 1),
+    visibility 0s linear 0.36s;
+}
+
+.stack-top.is-open {
+  transform: none;
+  /* inherit (not visible) so the page stays hidden while its tab panel is hidden */
+  visibility: inherit;
+  transition-delay: 0s;
+}
+
+/* ---------- Contacts list (no sections, no index) ---------- */
+.contact-list {
+  background: transparent;
+  padding: 6px 0 0;
+}
+
+.contact-item {
+  list-style: none;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 18px;
+  text-align: left;
+}
+
+.contact-row:active {
+  background: rgba(118, 118, 128, 0.12);
+}
+
+.contact-name {
+  font-size: 17px;
+  font-weight: 400;
+  color: #000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Lists page ---------- */
+.lists-page {
+  background: var(--tint);
+}
+
+.lists-scroll {
+  padding-top: calc(max(8px, calc(var(--safe-top) - 5px)) + 58px);
+}
+
+.lists-card {
+  margin: 0 18px;
+  background: #fff;
+  border-radius: 26px;
+  overflow: hidden;
+  transition: opacity 0.2s;
+}
+
+.lists-card.single {
+  margin-bottom: 0;
+}
+
+.lists-card.other {
+  margin-top: 28px;
+}
+
+.lists-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  padding: 0 18px;
+  font-size: 17px;
+  text-align: left;
+  color: #000;
+}
+
+.lists-row + .lists-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 0;
+  height: 0.5px;
+  background: var(--sep);
+}
+
+.lists-row:active:not(:disabled) {
+  background: #e5e5ea;
+}
+
+.lists-icon {
+  margin-right: 2px;
+}
+
+.lists-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lists-count {
+  color: var(--secondary);
+}
+
+.lists-chev {
+  color: #c4c4c7;
+}
+
+.lists-open {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  text-align: left;
+}
+
+.lists-row.custom {
+  padding: 0;
+}
+
+.lists-row.custom .lists-open {
+  padding: 0 18px;
+}
+
+.lists-minus {
+  flex: none;
+  display: flex;
+  margin-left: 14px;
+}
+
+.lists-input {
+  flex: 1;
+  min-width: 0;
+  height: 50px;
+  padding: 0 14px;
+  font-size: 17px;
+  background: none;
+  border: 0;
+  outline: 0;
+  caret-color: var(--blue);
+}
+
+.lists-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(100% - 36px);
+  margin: 22px 18px 8px;
+  padding: 0 16px 0 4px;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--secondary);
+}
+
+.lists-fold {
+  transition: transform 0.25s;
+}
+
+.lists-fold.closed {
+  transform: rotate(-90deg);
+}
+
+.lists-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.lists-collapse.open {
+  grid-template-rows: 1fr;
+}
+
+.lists-collapse-inner {
+  overflow: hidden;
+}
+
+/* edit mode: the built-in lists are dimmed, only user lists can be changed */
+.lists-page.editing .lists-card > .lists-row:not(.custom),
+.lists-page.editing .lists-card.single {
+  opacity: 0.45;
+}
+
+/* ---------- Contact details: blue "bubble" page (colors sampled from the iOS 26 reference) ---------- */
+.blue-detail {
+  isolation: isolate;
+  color: #fff;
+  /* left side of the reference: blue-grey fading into navy */
+  background: linear-gradient(
+    180deg,
+    #929fad 0%,
+    #8c9fab 12%,
+    #8c94a5 18.6%,
+    #8498a5 24.8%,
+    #84909f 31%,
+    #7a8e9f 37%,
+    #76849a 43.5%,
+    #6c7a96 50%,
+    #627496 56%,
+    #4c6c8e 62%,
+    #38668a 68%,
+    #3c5688 74.5%,
+    #2c487e 81%,
+    #1a427a 87%,
+    #12366a 93%,
+    #162e66 100%
+  );
+}
+
+/* right side of the reference: teal at the top turning purple at the bottom, blended in from the left */
+.blue-detail::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    #82a9a9 0%,
+    #7ca7a9 12%,
+    #76a1a7 25%,
+    #709aa5 31%,
+    #6498a3 37%,
+    #688a9f 43.5%,
+    #5e809a 50%,
+    #5c7896 56%,
+    #566c92 62%,
+    #4c5a90 68%,
+    #424c88 74.5%,
+    #3c3a7e 81%,
+    #302e76 87%,
+    #2a2468 93%,
+    #241c60 100%
+  );
+  -webkit-mask-image: linear-gradient(90deg, transparent 15%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 15%, #000 100%);
+}
+
+.blue-detail .scroll {
+  position: relative;
+  scrollbar-width: none;
+}
+
+.blue-detail .scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Back / Edit: same clear-glass bubble as the big circle */
+.blue-detail .glass-btn {
+  position: relative;
+  color: #fff;
+  border: 0;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 3px 4px 7px -4px rgba(255, 255, 255, 0.3),
+    inset -3px -5px 8px -5px rgba(255, 255, 255, 0.36),
+    inset 2px -3px 10px -7px rgba(10, 40, 80, 0.1);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.blue-detail .glass-btn:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.blue-detail .detail-head {
+  padding: 26px 24px 12px;
+  gap: 14px;
+}
+
+/* the big bubble: clear glass with a thin rim that flares at the top-left and the bottom-right,
+   each flare backed by a soft refraction glow just inside the edge (measured from the reference) */
+.detail-circle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(61cqw, 240px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: #eef1e0;
+  font-size: min(31cqw, 124px);
+  font-weight: 500;
+  letter-spacing: -3px;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.012);
+  box-shadow:
+    /* soft crescent glow inside the top-left edge */
+    inset 5px 7px 10px -7px rgba(255, 255, 255, 0.2),
+    /* stronger, hazier crescent inside the bottom-right edge */
+    inset -6px -9px 14px -8px rgba(255, 255, 255, 0.26),
+    /* faint shading on the opposite sides gives the bubble volume */
+    inset 4px -5px 18px -12px rgba(10, 40, 80, 0.08),
+    inset -4px 5px 18px -12px rgba(10, 40, 80, 0.04);
+}
+
+.detail-circle::before,
+.detail-circle::after,
+.blue-detail .glass-btn::before,
+.blue-detail .glass-btn::after,
+.quick-actions.round .quick::before,
+.quick-actions.round .quick::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.92) 0deg,
+    rgba(255, 255, 255, 0.6) 25deg,
+    rgba(255, 255, 255, 0.07) 55deg,
+    rgba(255, 255, 255, 0.04) 85deg,
+    rgba(255, 255, 255, 0.12) 105deg,
+    rgba(255, 255, 255, 0.62) 130deg,
+    rgba(255, 255, 255, 0.92) 150deg,
+    rgba(255, 255, 255, 1) 170deg,
+    rgba(255, 255, 255, 0.75) 190deg,
+    rgba(255, 255, 255, 0.3) 210deg,
+    rgba(255, 255, 255, 0.04) 235deg,
+    rgba(255, 255, 255, 0.04) 255deg,
+    rgba(255, 255, 255, 0.2) 275deg,
+    rgba(255, 255, 255, 0.62) 300deg,
+    rgba(255, 255, 255, 0.95) 325deg,
+    rgba(255, 255, 255, 1) 345deg,
+    rgba(255, 255, 255, 0.92) 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+/* crisp rim: ~65 levels brighter than the backdrop where it flares (matches the reference) */
+.detail-circle::before {
+  padding: 2.2px;
+  opacity: 0.74;
+}
+
+/* the flare also bleeds a little way into the glass (soft tail fading inwards, none outside) */
+.detail-circle::after {
+  opacity: 0.3;
+  -webkit-mask: radial-gradient(closest-side, transparent 86%, #000 100%);
+  mask: radial-gradient(closest-side, transparent 86%, #000 100%);
+}
+
+.detail-circle svg {
+  color: rgba(238, 242, 230, 0.9);
+}
+
+.blue-detail .detail-name {
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #eef5ec;
+}
+
+.blue-detail .detail-company {
+  color: rgba(238, 245, 236, 0.75);
+}
+
+/* four round glass bubbles */
+.quick-actions.round {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 18px 22px;
+}
+
+.quick-actions.round .quick {
+  position: relative;
+  flex: none;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.025);
+  border: 0;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow:
+    inset 4px 5px 9px -5px rgba(255, 255, 255, 0.26),
+    inset -5px -7px 11px -6px rgba(255, 255, 255, 0.34),
+    inset 3px -4px 14px -8px rgba(10, 40, 80, 0.1);
+  transition: background 0.15s;
+}
+
+.quick-actions.round .quick:active {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* rim + inward glow of the small bubbles (thinner than the big one) */
+.blue-detail .glass-btn::before,
+.quick-actions.round .quick::before {
+  padding: 1.5px;
+  opacity: 0.78;
+}
+
+.blue-detail .glass-btn::after,
+.quick-actions.round .quick::after {
+  opacity: 0.28;
+  -webkit-mask: radial-gradient(closest-side, transparent 80%, #000 100%);
+  mask: radial-gradient(closest-side, transparent 80%, #000 100%);
+}
+
+/* translucent lavender cards */
+.glass-card {
+  margin: 0 13px 8px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(150, 165, 245, 0.26) 0%, rgba(150, 120, 235, 0.28) 100%);
+  border: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.glass-card .card-row {
+  padding: 0 20px;
+}
+
+.glass-card .card-row.field {
+  min-height: 66px;
+  gap: 2px;
+}
+
+.glass-card .field-label {
+  font-size: 15px;
+  color: #fff;
+}
+
+.glass-card .field-value {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.glass-card .field-value.link {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.glass-card .card-row.field.dated {
+  position: relative;
+}
+
+.field-cal {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+}
+
+.glass-card .card-row.action {
+  color: rgba(255, 255, 255, 0.9);
+  min-height: 52px;
+  font-weight: 400;
+}
+
+.glass-card button.card-row:active {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.notes-card .card-row.field {
+  min-height: 100px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 13px;
+}
+
+/* ---------- Share Contact sheet ---------- */
+.share-sheet {
+  position: relative;
+}
+
+.share-scroll {
+  padding: 8px 18px 120px !important;
+}
+
+.share-card {
+  margin-bottom: 14px;
+  border-radius: 24px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.share-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 62px;
+  padding: 8px 16px;
+  text-align: left;
+}
+
+.share-row.grouped {
+  min-height: 58px;
+}
+
+.share-row.grouped + .share-row.grouped::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 56px;
+  right: 16px;
+  height: 0.5px;
+  background: var(--sep);
+}
+
+.share-check {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--blue);
+  color: #fff;
+}
+
+.share-check.on {
+  background: var(--blue);
+}
+
+.share-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.share-label {
+  font-size: 12px;
+  color: var(--secondary);
+}
+
+.share-value {
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.share-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--safe-bottom) + 14px);
+  display: flex;
+  justify-content: center;
+}
+
+.share-all {
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 24px;
+  font-weight: 500;
+}
+
+/* ---------- Block Contact popover ---------- */
+.block-root {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+}
+
+.block-backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.block-pop {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 24px);
+  width: min(62cqw, 250px);
+  padding: 18px 16px 12px;
+  border-radius: 34px;
+  background: rgba(247, 247, 250, 0.88);
+  transform: translateX(-50%) scale(0.8);
+  transform-origin: 50% 100%;
+  opacity: 0;
+  transition:
+    transform 0.28s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.2s;
+}
+
+.block-root.is-open .block-pop {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+.block-pop p {
+  margin: 0 4px 14px;
+  font-size: 16px;
+  line-height: 1.3;
+  color: #000;
+}
+
+.block-btn {
+  width: 100%;
+  height: 46px;
+  border-radius: 23px;
+  background: rgba(118, 118, 128, 0.12);
+  color: var(--red);
+  font-size: 17px;
+}
+
+.block-btn:active {
+  background: rgba(118, 118, 128, 0.25);
+}
+
+/* the Edit pill is wide: keep its inward glow subtle so the rim stays clean */
+.blue-detail .glass-btn:not(.round)::after {
+  opacity: 0.1;
+}
+
+/* ---------- Quick-action bubbles: flat frosted discs (matches the small-button reference) ----------
+   slightly lighter disc, muted icon, thin rim that is light at the top/bottom and dark at the sides */
+.quick-actions.round .quick {
+  color: rgba(255, 255, 255, 0.36);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.06) 55%, rgba(255, 255, 255, 0.07) 100%);
+  box-shadow:
+    inset 0 2px 3px -1px rgba(255, 255, 255, 0.26),
+    inset 0 -4px 5px -3px rgba(255, 255, 255, 0.3),
+    0 1px 1.5px rgba(20, 40, 90, 0.14);
+}
+
+.quick-actions.round .quick svg {
+  width: 21px;
+  height: 21px;
+}
+
+.quick-actions.round .quick::before {
+  padding: 1.2px;
+  opacity: 1;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.42) 0deg,
+    rgba(255, 255, 255, 0.14) 32deg,
+    rgba(20, 40, 85, 0.38) 75deg,
+    rgba(20, 40, 85, 0.38) 105deg,
+    rgba(255, 255, 255, 0.14) 138deg,
+    rgba(255, 255, 255, 0.42) 180deg,
+    rgba(255, 255, 255, 0.14) 222deg,
+    rgba(20, 40, 85, 0.38) 255deg,
+    rgba(20, 40, 85, 0.38) 285deg,
+    rgba(255, 255, 255, 0.14) 328deg,
+    rgba(255, 255, 255, 0.42) 360deg
+  );
+}
+
+.quick-actions.round .quick::after {
+  display: none;
+}
+
+.quick-actions.round .quick:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* exact 1:1 bubbles, slightly larger icons */
+.quick-actions.round .quick {
+  box-sizing: border-box;
+  width: 58px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  padding: 0;
+  flex: 0 0 58px;
+}
+
+.quick-actions.round .quick svg {
+  width: 25px;
+  height: 25px;
+  flex: none;
+}
+
+.blue-detail .glass-btn.round {
+  box-sizing: border-box;
+  width: 42px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  flex: none;
+}
+
+/* ---------- Back / Edit: same flat frosted look as the quick-action discs (matches the reference) ---------- */
+.blue-detail .glass-btn {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.06) 55%, rgba(255, 255, 255, 0.07) 100%);
+  box-shadow:
+    inset 0 2px 3px -1px rgba(255, 255, 255, 0.24),
+    inset 0 -4px 5px -3px rgba(255, 255, 255, 0.26),
+    0 1px 1.5px rgba(20, 40, 90, 0.14);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+/* thin rim: light along the top and bottom, a dark hairline at the sides (works for the circle and the pill) */
+.blue-detail .glass-btn::before {
+  padding: 1.2px;
+  opacity: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.46) 0%,
+    rgba(255, 255, 255, 0.14) 24%,
+    rgba(20, 40, 85, 0.36) 50%,
+    rgba(255, 255, 255, 0.14) 76%,
+    rgba(255, 255, 255, 0.46) 100%
+  );
+}
+
+.blue-detail .glass-btn::after {
+  display: none;
+}
+
+.blue-detail .glass-btn:active {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Edit: a proper pill (fully rounded ends), not an oval */
+.blue-detail .glass-btn:not(.round) {
+  min-width: 62px;
+  padding: 0 14px;
+  border-radius: 21px;
+  font-weight: 400;
+}
+
+.blue-detail .glass-btn:not(.round)::before {
+  border-radius: 21px;
 }

@@ -528,7 +528,7 @@
 }
 
 .avatar.blue {
-  background: linear-gradient(180deg, #a9c0e8 0%, #6f78b6 100%);
+  background: linear-gradient(180deg, #b3c2e0 0%, #8494c0 100%);
 }
 
 /* ---------- Grouped cards ---------- */
@@ -1118,6 +1118,21 @@ button.card-row:active {
 }
 
 .band-scroll {
+  /* items dissolve as they slide up under the title (still faintly visible up to the very top, behind the status bar) */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.14) 0,
+    rgba(0, 0, 0, 0.22) calc(var(--nav-h) - 24px),
+    rgba(0, 0, 0, 0.5) calc(var(--nav-h) - 4px),
+    #000 calc(var(--nav-h) + 18px)
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.14) 0,
+    rgba(0, 0, 0, 0.22) calc(var(--nav-h) - 24px),
+    rgba(0, 0, 0, 0.5) calc(var(--nav-h) - 4px),
+    #000 calc(var(--nav-h) + 18px)
+  );
   padding-top: var(--nav-h);
   scrollbar-width: none;
   touch-action: pan-y;
@@ -1183,4 +1198,33 @@ button.card-row:active {
     rgba(255, 255, 255, 0.55) 45%,
     rgba(255, 255, 255, 0) 100%
   );
+}
+
+
+/* ---------- Red corner "demo" ribbon (top-right of the screen) ---------- */
+.demo-ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.demo-ribbon span {
+  position: absolute;
+  top: 24px;
+  right: -40px;
+  width: 160px;
+  padding: 3px 0;
+  transform: rotate(45deg);
+  background: #e5202a;
+  color: #fff;
+  font: 700 10px/1.3 -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif;
+  letter-spacing: 0.4px;
+  text-align: center;
+  text-transform: uppercase;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }

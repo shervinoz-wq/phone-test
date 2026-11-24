@@ -375,3 +375,34 @@ export const PersonFillCircleIcon = ({ size = 18, ...p }: P) => (
     </g>
   </svg>
 )
+
+export const ChevronDownIcon = ({ size = 14, ...p }: P) => (
+  <svg viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" {...base(size, p)} width={(size * 22) / 12}>
+    <path d="M2 2l9 8 9-8" />
+  </svg>
+)
+
+export const PeopleIcon = ({ size = 24, ...p }: P) => (
+  <svg viewBox="0 0 28 20" fill="currentColor" {...base(size, p)} width={(size * 28) / 20}>
+    <circle cx="9" cy="5.6" r="4.2" />
+    <path d="M0.8 18.6c.4-4.4 3.5-6.6 8.2-6.6s7.8 2.2 8.2 6.6z" />
+    <circle cx="20" cy="6.4" r="3.4" />
+    <path d="M18.6 12.4c.5-.1 1-.1 1.5-.1 4 0 6.6 1.9 7 6.3h-7.8c-.1-2.6-.4-4.7-.7-6.2z" />
+  </svg>
+)
+
+export const CalendarIcon = ({ size = 16, ...p }: P) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...base(size, p)}>
+    <path d="M5.4 3.6h13.2a2.6 2.6 0 0 1 2.6 2.6V9H2.8V6.2a2.6 2.6 0 0 1 2.6-2.6z" />
+    <path d="M2.8 10.2h18.4v7.6a2.6 2.6 0 0 1-2.6 2.6H5.4a2.6 2.6 0 0 1-2.6-2.6z" />
+    <g fill="#6c78b8">
+      <rect x="5.6" y="12" width="2.2" height="2" rx=".4" />
+      <rect x="9" y="12" width="2.2" height="2" rx=".4" />
+      <rect x="12.4" y="12" width="2.2" height="2" rx=".4" />
+      <rect x="15.8" y="12" width="2.2" height="2" rx=".4" />
+      <rect x="5.6" y="15.6" width="2.2" height="2" rx=".4" />
+      <rect x="9" y="15.6" width="2.2" height="2" rx=".4" />
+      <rect x="12.4" y="15.6" width="2.2" height="2" rx=".4" />
+    </g>
+  </svg>
+)

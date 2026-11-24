@@ -7,6 +7,8 @@ export interface AppApi {
   simulateIncoming: () => void
   newContact: (prefillNumber?: string, opts?: { morph?: 'center' | 'plus'; from?: DOMRect }) => void
   editContact: (id: string) => void
+  shareContact: (id: string) => void
+  blockContact: (id: string) => void
   pickFavourite: () => void
   editMyCard: () => void
   resetData: () => void

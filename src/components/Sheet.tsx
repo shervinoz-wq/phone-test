@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { useTransitionMount } from '../hooks/useTransitionMount'
+import { useSheetDrag } from '../hooks/useSheetDrag'
 
 export type MorphKind = 'center' | 'plus'
 
@@ -85,9 +86,31 @@ export function Sheet({ open, onClose, children, className, morph, morphFrom }: 
   const dimRef = useRef<HTMLDivElement>(null)
   const glyphRef = useRef<HTMLDivElement>(null)
   const anims = useRef<Animation[]>([])
+  const draggedClose = useRef(false)
   useEffect(() => {
     if (open) openedAt.current = Date.now()
   }, [open])
+
+  // Drag the sheet down to dismiss it (iOS behaviour).
+  useSheetDrag({
+    sheetRef,
+    backdropRef: dimRef,
+    mounted,
+    active: open,
+    onClose,
+    // morph sheets are driven by the Web Animations timeline, so they slide out on their own
+    ...(morph
+      ? {
+          backdropRef: undefined,
+          exitTransform: 'translateY(100%)',
+          exitTransition: 'transform 0.17s cubic-bezier(0.32, 0.72, 0, 1)',
+          onDismissStart: () => {
+            draggedClose.current = true
+            dimRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 170, fill: 'forwards' })
+          },
+        }
+      : { exitTransition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)' }),
+  })
 
   // Create the morph timeline once the sheet is in the DOM (before the first paint).
   useLayoutEffect(() => {
@@ -173,6 +196,8 @@ export function Sheet({ open, onClose, children, className, morph, morphFrom }: 
   // Forward when opening, the same timeline backwards when closing.
   useEffect(() => {
     if (!morph) return
+    if (open) draggedClose.current = false
+    else if (draggedClose.current) return // closed by dragging: no reverse morph
     anims.current.forEach((a) => {
       a.updatePlaybackRate(open ? 1 : -1)
       a.play()
@@ -225,11 +250,22 @@ interface ActionSheetProps {
 /** iOS action sheet: a group of actions and a separate Cancel button. */
 export function ActionSheet({ open, title, actions, onClose }: ActionSheetProps) {
   const { mounted, shown } = useTransitionMount(open, 300)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const backdropRef = useRef<HTMLDivElement>(null)
+  useSheetDrag({
+    sheetRef: panelRef,
+    backdropRef,
+    mounted,
+    active: open,
+    onClose,
+    exitTransform: 'translateY(120%)',
+    exitTransition: 'transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)',
+  })
   if (!mounted) return null
   return (
     <div className={`sheet-root action${shown ? ' is-open' : ''}`}>
-      <div className="sheet-backdrop" onClick={onClose} />
-      <div className="action-sheet" role="dialog" aria-modal="true">
+      <div ref={backdropRef} className="sheet-backdrop" onClick={onClose} />
+      <div ref={panelRef} className="action-sheet" role="dialog" aria-modal="true">
         <div className="action-group">
           {title && <div className="action-title">{title}</div>}
           {actions.map((a) => (

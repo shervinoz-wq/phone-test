@@ -29,6 +29,8 @@ const TRACKS = {
   h: [1, 1.14, 1.12, 1.08, 1.02, 1, 0.98, 1],
   mag: [1, 1.18, 1.2, 1.12, 1.04, 1, 1, 1],
   glass: [0, 1, 1, 0.8, 0.4, 0.1, 0, 0],
+  // the whole glass box (all three tabs) swells a little while the lens travels, then settles back
+  box: [1, 1.014, 1.022, 1.017, 1.009, 1.003, 1, 1],
 }
 const DURATION = T[T.length - 1]
 
@@ -88,7 +90,8 @@ export function TabBar({ active, onChange, onSearch, missedBadge, hidden }: Prop
 
   const tabCenter = (i: number) => PAD + ((geo.current.w - PAD * 2) / 3) * (i + 0.5)
 
-  const render = (cx: number, w = 1, h = 1, mag = 1, glass = 0) => {
+  const render = (cx: number, w = 1, h = 1, mag = 1, glass = 0, box = 1) => {
+    if (nav.current) nav.current.style.transform = box === 1 ? '' : `scale(${box.toFixed(4)})`
     const l = lens.current
     if (!l) return
     const { w: bw, h: bh } = geo.current
@@ -177,6 +180,7 @@ export function TabBar({ active, onChange, onSearch, missedBadge, hidden }: Prop
         sample(TRACKS.h, t),
         sample(TRACKS.mag, t),
         Math.max(0, Math.min(1, sample(TRACKS.glass, t))),
+        sample(TRACKS.box, t),
       )
       if (t < DURATION) {
         raf.current = requestAnimationFrame(step)

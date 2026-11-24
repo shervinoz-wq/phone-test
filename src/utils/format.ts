@@ -93,3 +93,21 @@ export function durationLabel(seconds: number): string {
 }
 
 export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36)
+
+/** "2000-11-21" -> "November 21, 2000" (year left out for the placeholder years 0000 / 1604). */
+export function formatDay(value: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!m) return value
+  const y = Number(m[1])
+  const d = new Date(2000, Number(m[2]) - 1, Number(m[3]))
+  const md = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric' }).format(d)
+  return y === 0 || y === 1604 ? md : `${md}, ${y}`
+}
+
+/** Letters for the big profile bubble: always two when possible (first+last initials, else the first two letters). */
+export function profileInitials(c: Pick<Contact, 'first' | 'last' | 'company'>): string {
+  const words = [c.first, c.last].flatMap((w) => (w || '').trim().split(/\s+/)).filter(Boolean)
+  if (words.length === 0) return (c.company || '').trim().slice(0, 2).toUpperCase()
+  if (words.length === 1) return [...words[0]].slice(0, 2).join('').toUpperCase()
+  return (([...words[0]][0] ?? '') + ([...words[1]][0] ?? '')).toUpperCase()
+}
