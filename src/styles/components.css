@@ -125,13 +125,14 @@
 /* ---------- Floating tab bar ---------- */
 .tabbar-wrap {
   position: absolute;
-  left: 18px;
-  right: 19px;
-  bottom: max(8px, calc(var(--safe-bottom) - 14px));
+  --s: calc(100cqw / 591);
+  left: calc(28 * var(--s));
+  right: calc(29 * var(--s));
+  bottom: calc(30 * var(--s));
   z-index: 10;
   display: flex;
-  gap: 7px;
-  height: var(--tab-h);
+  gap: calc(11 * var(--s));
+  height: calc(86 * var(--s));
   transition:
     opacity 0.22s,
     transform 0.22s;
@@ -144,11 +145,17 @@
 }
 
 .tabbar {
+  border-color: rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 0 calc(11 * var(--s)) rgba(0, 0, 0, 0.065),
+    inset 0 calc(1.5 * var(--s)) calc(2 * var(--s)) rgba(255, 255, 255, 0.9),
+    0 calc(5 * var(--s)) calc(14 * var(--s)) rgba(0, 0, 0, 0.05);
   position: relative;
   flex: 1;
   display: flex;
-  padding: 4px;
-  border-radius: 28px;
+  padding: calc(6.5 * var(--s)) calc(11 * var(--s));
+  border-radius: 999px;
 }
 
 .tab-row {
@@ -163,8 +170,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  border-radius: 24px;
+  gap: calc(7 * var(--s));
+  padding-top: calc(4 * var(--s));
+  border-radius: 999px;
   color: #000;
 }
 
@@ -240,7 +248,7 @@
 }
 
 .lens-tab {
-  color: var(--blue);
+  color: rgb(71, 139, 246);
   text-shadow:
     calc(var(--glass) * -1.4px) 0 0 rgba(255, 40, 120, calc(var(--glass) * 0.35)),
     calc(var(--glass) * 1.4px) 0 0 rgba(0, 200, 255, calc(var(--glass) * 0.5));
@@ -272,24 +280,47 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 26px;
+  height: calc(31 * var(--s));
+}
+
+.tab-icon svg {
+  width: calc(39.6 * var(--s));
+  height: calc(39.6 * var(--s));
+  flex: none;
+}
+
+.tab-icon.ti-keypad svg {
+  width: calc(52 * var(--s));
+  height: calc(52 * var(--s));
 }
 
 .tab-label {
-  font-size: 10px;
-  line-height: 1.2;
+  font-size: calc(13.6 * var(--s));
+  line-height: calc(15 * var(--s));
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .search-btn {
+  border-color: rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 0 calc(11 * var(--s)) rgba(0, 0, 0, 0.065),
+    inset 0 calc(1.5 * var(--s)) calc(2 * var(--s)) rgba(255, 255, 255, 0.9),
+    0 calc(5 * var(--s)) calc(14 * var(--s)) rgba(0, 0, 0, 0.05);
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--tab-h);
-  height: var(--tab-h);
+  width: calc(86 * var(--s));
+  height: calc(86 * var(--s));
   border-radius: 50%;
   color: #000;
+}
+
+.search-btn svg {
+  width: calc(38 * var(--s));
+  height: calc(38 * var(--s));
 }
 
 .badge {

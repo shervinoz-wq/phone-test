@@ -8,7 +8,8 @@ const TABS: { id: TabId; label: string; Icon: ComponentType<{ size?: number }> }
   { id: 'keypad', label: 'Keypad', Icon: KeypadIcon },
 ]
 
-const PAD = 4 // padding of the glass bar (px)
+// the lens is a bit wider than a tab slot in the reference (148 px lens vs 138.7 px slot)
+const LENS_W = 1.067
 // glyph sizes measured from the original (circle icons ~21px, keypad grid ~22px wide)
 const ICON_SIZE: Record<TabId, number> = { calls: 25.5, contacts: 25.5, keypad: 28 }
 
@@ -71,7 +72,7 @@ function TabVisual({ index, badge }: { index: number; badge: number }) {
   const { id, label, Icon } = TABS[index]
   return (
     <>
-      <span className="tab-icon">
+      <span className={`tab-icon ti-${id}`}>
         <Icon size={ICON_SIZE[id]} />
         {id === 'calls' && badge > 0 && <span className="badge">{badge}</span>}
       </span>
@@ -86,20 +87,23 @@ export function TabBar({ active, onChange, onSearch, missedBadge, hidden }: Prop
   const lens = useRef<HTMLDivElement>(null)
   const layers = useRef<(HTMLDivElement | null)[]>([])
   const geo = useRef({ w: 0, h: 0 })
+  const pad = useRef({ x: 4, y: 4 }) // padding of the glass bar (px), read from CSS
   const center = useRef<number | null>(null) // current lens centre (px, in the bar's coordinates)
   const raf = useRef(0)
   const index = TABS.findIndex((t) => t.id === active)
 
-  const tabCenter = (i: number) => PAD + ((geo.current.w - PAD * 2) / 3) * (i + 0.5)
+  const tabCenter = (i: number) => pad.current.x + ((geo.current.w - pad.current.x * 2) / 3) * (i + 0.5)
 
   const render = (cx: number, w = 1, h = 1, mag = 1, glass = 0, box = 1) => {
     if (nav.current) nav.current.style.transform = box === 1 ? '' : `scale(${box.toFixed(4)})`
     const l = lens.current
     if (!l) return
     const { w: bw, h: bh } = geo.current
-    const tabW = (bw - PAD * 2) / 3
-    const baseH = bh - PAD * 2
-    const W = tabW * w
+    const PX = pad.current.x
+    const PY = pad.current.y
+    const tabW = (bw - PX * 2) / 3
+    const baseH = bh - PY * 2
+    const W = tabW * w * LENS_W
     const H = baseH * h
     const L = cx - W / 2
     const Tp = (bh - H) / 2
@@ -111,20 +115,20 @@ export function TabBar({ active, onChange, onSearch, missedBadge, hidden }: Prop
     l.style.setProperty('--glass', glass.toFixed(3))
 
     // edges of the lens in the coordinates of the (un-moved) tab content
-    const left = L - PAD
-    const right = L + W - PAD
-    const top = Tp - PAD
-    const bottom = Tp + H - PAD
-    const mx = cx - PAD
+    const left = L - PX
+    const right = L + W - PX
+    const top = Tp - PY
+    const bottom = Tp + H - PY
+    const mx = cx - PX
     const my = baseH / 2
     // refraction at the rim: the content just inside each edge is stretched
     // ~3.4x towards that edge, which smears the icon / label into streaks
     const K = 1 + 2.4 * glass
     const set = (el: HTMLDivElement | null, ox: number, oy: number, sx: number, sy: number) => {
       if (!el) return
-      el.style.left = `${PAD - L}px`
-      el.style.top = `${PAD - Tp}px`
-      el.style.width = `${bw - PAD * 2}px`
+      el.style.left = `${PX - L}px`
+      el.style.top = `${PY - Tp}px`
+      el.style.width = `${bw - PX * 2}px`
       el.style.height = `${baseH}px`
       el.style.transformOrigin = `${ox}px ${oy}px`
       el.style.transform = `scale(${sx}, ${sy})`
@@ -143,6 +147,8 @@ export function TabBar({ active, onChange, onSearch, missedBadge, hidden }: Prop
     if (!el) return
     const measure = () => {
       geo.current = { w: el.clientWidth, h: el.clientHeight }
+      const cs = getComputedStyle(el)
+      pad.current = { x: parseFloat(cs.paddingLeft) || 0, y: parseFloat(cs.paddingTop) || 0 }
       if (!raf.current) {
         center.current = tabCenter(index)
         render(center.current)

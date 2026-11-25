@@ -10,7 +10,7 @@
   --sep: #c6c6c8;
   --tab-bg: #fbfbfc;
   --kb: 0px;
-  --tab-h: 57px;
+  --tab-h: 63px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --frame-scale: 1;
@@ -171,7 +171,6 @@ button:focus-visible {
     border-radius: 47px;
   }
 
-  .keypad-page,
   .call-screen {
     --key: 80px !important;
   }

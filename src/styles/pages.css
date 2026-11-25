@@ -13,11 +13,12 @@
   transform: none;
 }
 
-/* ---------- Keypad (iPhone 13: keys 80pt, pitch 102 x 98pt) ---------- */
+/* ---------- Keypad: every size below is measured from the iPhone 14 Pro Max reference
+   screenshot (591 x 1280 px). --s = 1 reference pixel, so the layout scales with the screen width. ---------- */
 .keypad-page {
-  --key: clamp(52px, min(20.5cqw, 9.5dvh), 80px);
-  /* original: call button bottom sits ~60px above the tab bar */
-  padding-bottom: calc(max(8px, calc(var(--safe-bottom) - 14px)) + var(--tab-h) + 60px);
+  --s: calc(100cqw / 591);
+  --key: calc(122.5 * var(--s));
+  padding-bottom: 0;
 }
 
 .dial-top {
@@ -152,19 +153,25 @@
 
 .dial-grid,
 .dial-actions {
+  position: absolute;
+  left: 0;
+  right: 0;
   display: grid;
   grid-template-columns: repeat(3, var(--key));
   justify-content: center;
-  column-gap: calc(var(--key) * 0.276);
+  column-gap: calc(31.5 * var(--s));
 }
 
+/* key rows: centres at y = 424, 573, 721.5, 870 (pitch 148.5) */
 .dial-grid {
-  row-gap: calc(var(--key) * 0.261);
+  top: calc(362.75 * var(--s));
+  row-gap: calc(26 * var(--s));
 }
 
+/* call button centre at y = 1026 */
 .dial-actions {
+  top: calc(964.75 * var(--s));
   align-items: center;
-  margin-top: calc(var(--key) * 0.336);
 }
 
 .dial-spacer {
@@ -181,14 +188,19 @@
   width: var(--key);
   height: var(--key);
   border-radius: 50%;
-  background: rgb(54, 205, 92);
-  /* glossy edge like the reference: lighter rim at the top and bottom */
+  background: rgb(105, 202, 107);
+  /* soft lighter rim, brighter towards the bottom edge (sampled from the reference) */
   box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.28),
-    inset 0 -2px 3px rgba(140, 255, 175, 0.4),
-    inset 0 0 0 1px rgba(105, 232, 140, 0.55);
+    inset 0 0 calc(7 * var(--s)) rgba(255, 255, 255, 0.28),
+    inset 0 calc(-5 * var(--s)) calc(8 * var(--s)) rgba(190, 255, 200, 0.35),
+    0 calc(3 * var(--s)) calc(10 * var(--s)) rgba(0, 0, 0, 0.04);
   color: #fff;
   will-change: transform;
+}
+
+.call-btn svg {
+  width: calc(53 * var(--s));
+  height: calc(53 * var(--s));
 }
 
 .backspace-btn {
@@ -206,13 +218,15 @@
   height: var(--key);
   border-radius: 50%;
   color: #000;
-  background: radial-gradient(circle at 50% 36%, #ffffff 0%, #ffffff 58%, #f0f0f2 100%);
-  border: 1px solid rgba(60, 60, 67, 0.1);
+  /* near-white glass disc: 1px grey rim, darker inner edge, very soft outer glow */
+  background: radial-gradient(circle at 50% 42%, #fefefe 0%, #fdfdfd 55%, #f8f8f8 100%);
+  border: calc(1.2 * var(--s)) solid rgba(0, 0, 0, 0.11);
   box-shadow:
-    inset 0 2px 3px rgba(255, 255, 255, 1),
-    inset 0 -4px 10px rgba(0, 0, 0, 0.035),
-    0 2px 8px rgba(0, 0, 0, 0.05);
+    inset 0 0 calc(10 * var(--s)) rgba(0, 0, 0, 0.055),
+    inset 0 calc(2 * var(--s)) calc(3 * var(--s)) rgba(255, 255, 255, 0.9),
+    0 calc(4 * var(--s)) calc(11 * var(--s)) rgba(0, 0, 0, 0.045);
   touch-action: manipulation;
+  box-sizing: border-box;
 }
 
 /* white glow that fades in/out during the press animation */
@@ -233,10 +247,10 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(50% - var(--key) * 0.083);
-  transform: translateY(-50%);
-  font-size: calc(var(--key) * 0.45);
-  line-height: 1;
+  top: calc(21.8 * var(--s));
+  font-size: calc(55 * var(--s));
+  line-height: calc(55 * var(--s));
+  height: calc(55 * var(--s));
   text-align: center;
   font-weight: 400;
 }
@@ -245,11 +259,10 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(50% + var(--key) * 0.21);
-  transform: translateY(-50%);
+  top: calc(73.8 * var(--s));
   text-align: center;
-  font-size: calc(var(--key) * 0.135);
-  line-height: 1;
+  font-size: calc(16.5 * var(--s));
+  line-height: calc(16.5 * var(--s));
   font-weight: 600;
   letter-spacing: 0.2em;
   padding-left: 0.2em;
@@ -257,18 +270,37 @@
 }
 
 .dial-key[aria-label='0'] .letters {
-  font-size: calc(var(--key) * 0.2);
-  font-weight: 700;
+  top: calc(68 * var(--s));
+  font-size: calc(24 * var(--s));
+  line-height: calc(24 * var(--s));
+  font-weight: 600;
+  letter-spacing: 0;
+  padding-left: 0;
 }
 
-.dial-key.star .digit,
-.dial-key[aria-label='pound'] .digit {
+/* * and # are drawn as shapes so they look the same with SF Pro and with the fallback font */
+.dial-key .key-glyph {
+  position: absolute;
+  left: 50%;
   top: 50%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: calc(4.2 * var(--s));
+  overflow: visible;
 }
 
-.dial-key.star .digit {
-  transform: translateY(-34%);
-  font-size: calc(var(--key) * 0.6);
+.dial-key .star-glyph {
+  width: calc(28 * var(--s));
+  height: calc(28 * var(--s));
+  stroke-width: 4.2;
+  transform: translate(-50%, -50%) translate(0, calc(1.2 * var(--s)));
+}
+
+.dial-key .hash-glyph {
+  width: calc(29 * var(--s));
+  height: calc(33 * var(--s));
+  stroke-width: 4.2;
+  transform: translate(-50%, -50%) translate(calc(-1 * var(--s)), calc(0.2 * var(--s)));
 }
 
 .dial-key.dark {
