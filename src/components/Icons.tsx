@@ -233,6 +233,13 @@ export const FilterIcon = ({ size = 24, ...p }: P) => (
   </svg>
 )
 
+/** Filter button glyph of the real Calls screen: three rounded bars, tightly spaced. */
+export const CallsFilterIcon = ({ size = 24, ...p }: P) => (
+  <svg {...stroke(size, p)} strokeWidth={1.9}>
+    <path d="M3 7.1h18M5.4 12h13.2M7.3 16.9h9.4" />
+  </svg>
+)
+
 export const PersonCircleOutlineIcon = ({ size = 22, ...p }: P) => (
   <svg {...stroke(size, p)} strokeWidth={1.6}>
     <circle cx="12" cy="12" r="9.5" />

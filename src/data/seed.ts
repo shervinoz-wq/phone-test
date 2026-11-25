@@ -11,7 +11,7 @@ export function createSeedState(now = Date.now()): PhoneState {
     favourites: [],
     lists: [],
     recents: [],
-    settings: { keypadSounds: true, myName: 'saman aghil', deviceIds: { ...DEFAULT_DEVICE_IDS } },
+    settings: { keypadSounds: false, myName: 'saman aghil', deviceIds: { ...DEFAULT_DEVICE_IDS } },
     lastDialed: '',
     recentsSeenAt: now,
   }

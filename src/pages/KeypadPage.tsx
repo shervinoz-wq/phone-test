@@ -12,7 +12,7 @@ import { playTone } from '../utils/sound'
 const MAX_LENGTH = 32
 
 export function KeypadPage() {
-  const { state } = useStore()
+  const { state, dispatch } = useStore()
   const app = useApp()
   const [number, setNumber] = useState('')
   const [expanded, setExpanded] = useState(false)
@@ -39,8 +39,13 @@ export function KeypadPage() {
     } else if (number === '*1*1#') {
       setNumber('')
       app.editDeviceIds()
+    } else if (number === '*1*3#') {
+      // Toggle keypad sounds (silent by default); only a toast confirms the new state.
+      setNumber('')
+      dispatch({ type: 'settings/set', patch: { keypadSounds: !sounds } })
+      app.toast(sounds ? 'Keypad sounds disabled' : 'Keypad sounds enabled')
     }
-  }, [number, app])
+  }, [number, app, dispatch, sounds])
 
   const press = useCallback(
     (d: string) => {

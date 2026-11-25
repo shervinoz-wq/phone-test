@@ -26,7 +26,6 @@ export function ContactsPage({ title, listId, onBack }: Props) {
   const contacts = useMemo(() => (listId === null ? sortContacts(state.contacts) : []), [state.contacts, listId])
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const indexRef = useRef<HTMLDivElement | null>(null)
-  const myName = state.settings.myName.trim()
 
   // contacts grouped into alphabetical sections (A–Z, then #)
   const sections = useMemo(() => {
@@ -104,15 +103,6 @@ export function ContactsPage({ title, listId, onBack }: Props) {
               Create New Contact
             </button>
           </div>
-        )}
-        {contacts.length > 0 && myName && (
-          <button type="button" className="mycard-row" onClick={() => app.editMyCard()}>
-            <Avatar blue size={38} />
-            <span className="mycard-text">
-              <span className="mycard-name">{myName}</span>
-              <span className="mycard-sub">My Card</span>
-            </span>
-          </button>
         )}
         {sections.map((sec) => (
           <section key={sec.letter} className="ct-section" data-letter={sec.letter}>

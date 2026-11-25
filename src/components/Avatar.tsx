@@ -14,7 +14,7 @@ export function Avatar({ contact, size = 40, blue = false }: Props) {
   return (
     <div
       className={`avatar${blue ? ' blue' : ''}`}
-      style={{ width: size, height: size, fontSize: size * 0.4 }}
+      style={{ width: size, height: size, fontSize: size * 0.52 }}
       aria-hidden
     >
       {text ? text : blue ? <SilhouetteIcon size={size} /> : <PersonCropIcon size={size * 0.62} />}

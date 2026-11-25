@@ -32,8 +32,8 @@ export function playTone(key: string, ms = 140) {
   const now = ac.currentTime
   const gain = ac.createGain()
   gain.gain.setValueAtTime(0, now)
-  gain.gain.linearRampToValueAtTime(0.12, now + 0.01)
-  gain.gain.setValueAtTime(0.12, now + ms / 1000 - 0.02)
+  gain.gain.linearRampToValueAtTime(0.084, now + 0.01)
+  gain.gain.setValueAtTime(0.084, now + ms / 1000 - 0.02)
   gain.gain.linearRampToValueAtTime(0, now + ms / 1000)
   gain.connect(ac.destination)
   for (const f of [ROWS[Math.floor(i / 3)], COLS[i % 3]]) {

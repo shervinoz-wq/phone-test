@@ -24,10 +24,10 @@ export function displayName(c: Contact): string {
 }
 
 export function initials(c: Pick<Contact, 'first' | 'last' | 'company'>): string {
-  const a = (c.first || '').trim()[0] ?? ''
-  const b = (c.last || '').trim()[0] ?? ''
-  const res = (a + b).toUpperCase()
-  return res || (c.company || '').trim()[0]?.toUpperCase() || ''
+  // One word -> one letter; two or more words (first + last, or a multi-word first name) -> two letters.
+  const words = [c.first, c.last].flatMap((w) => (w || '').trim().split(/\s+/)).filter(Boolean)
+  if (words.length > 0) return words.slice(0, 2).map((w) => [...w][0]).join('').toUpperCase()
+  return [...(c.company || '').trim()][0]?.toUpperCase() || ''
 }
 
 /** Key used for alphabetical sections (first name, like iOS default). */

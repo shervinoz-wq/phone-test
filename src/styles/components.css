@@ -1318,3 +1318,26 @@ button.card-row:active {
   margin-top: 26px;
   cursor: pointer;
 }
+
+/* ---------- Calls header buttons: match the real iPhone Phone app ---------- */
+.calls-page .navbar .glass-btn {
+  height: 40px;
+  min-width: 40px;
+  padding: 0 15.5px;
+  border-radius: 20px;
+  font-weight: 400;
+  background: linear-gradient(to bottom, #f7f7f7, #fcfcfc 55%, #fefefe);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: 1px solid #dedede;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.calls-page .navbar .glass-btn.round {
+  width: 40px;
+  padding: 0;
+}
+
+.calls-page .navbar .glass-btn:active {
+  background: #ececee;
+}

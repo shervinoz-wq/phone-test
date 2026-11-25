@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 import {
   CheckCircleOutlineIcon,
+  CallsFilterIcon,
   CheckIcon,
   ClassicLayoutIcon,
-  FilterIcon,
   InfoIcon,
   MinusCircleIcon,
   MissedIcon,
@@ -46,7 +46,7 @@ export function CallsPage() {
   const nothing = filter === 'voicemail' || (rows.length === 0 && !showFavs)
 
   return (
-    <div className="page bands">
+    <div className="page bands calls-page">
       <header className="navbar">
         <div className="nav-side nav-left">
           {selecting ? (
@@ -81,7 +81,7 @@ export function CallsPage() {
                 setFilterMenu(true)
               }}
             >
-              <FilterIcon size={22} />
+              <CallsFilterIcon size={24} />
             </button>
           )}
         </div>

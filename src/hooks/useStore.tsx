@@ -3,6 +3,7 @@ import { createSeedState } from '../data/seed'
 import type { CallRecord, Contact, ContactList, PhoneState, Settings } from '../types'
 
 const STORAGE_KEY = 'iphone-phone:v2'
+const SOUND_FLAG = 'iphone-phone:sound-default-off'
 
 export type Action =
   | { type: 'contact/save'; contact: Contact }
@@ -73,6 +74,11 @@ function load(): PhoneState {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw) as PhoneState
+      // One-time migration: keypad sounds are off by default now (also for data saved by older versions).
+      if (!localStorage.getItem(SOUND_FLAG)) {
+        localStorage.setItem(SOUND_FLAG, '1')
+        if (parsed.settings) parsed.settings.keypadSounds = false
+      }
       if (Array.isArray(parsed.contacts) && Array.isArray(parsed.recents)) {
         return { ...createSeedState(), ...parsed, lists: Array.isArray(parsed.lists) ? parsed.lists : [], recents: [], settings: {
             ...createSeedState().settings,
