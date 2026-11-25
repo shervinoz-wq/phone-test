@@ -16,7 +16,8 @@
 /* ---------- Keypad (iPhone 13: keys 80pt, pitch 102 x 98pt) ---------- */
 .keypad-page {
   --key: clamp(52px, min(20.5cqw, 9.5dvh), 80px);
-  padding-bottom: calc(var(--safe-bottom) + clamp(48px, 11.8dvh, 100px));
+  /* original: call button bottom sits ~60px above the tab bar */
+  padding-bottom: calc(max(8px, calc(var(--safe-bottom) - 14px)) + var(--tab-h) + 60px);
 }
 
 .dial-top {
@@ -154,16 +155,16 @@
   display: grid;
   grid-template-columns: repeat(3, var(--key));
   justify-content: center;
-  column-gap: calc(var(--key) * 0.265);
+  column-gap: calc(var(--key) * 0.276);
 }
 
 .dial-grid {
-  row-gap: calc(var(--key) * 0.225);
+  row-gap: calc(var(--key) * 0.261);
 }
 
 .dial-actions {
   align-items: center;
-  margin-top: calc(var(--key) * 0.37);
+  margin-top: calc(var(--key) * 0.336);
 }
 
 .dial-spacer {
@@ -180,7 +181,12 @@
   width: var(--key);
   height: var(--key);
   border-radius: 50%;
-  background: rgb(47, 191, 78);
+  background: rgb(54, 205, 92);
+  /* glossy edge like the reference: lighter rim at the top and bottom */
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.28),
+    inset 0 -2px 3px rgba(140, 255, 175, 0.4),
+    inset 0 0 0 1px rgba(105, 232, 140, 0.55);
   color: #fff;
   will-change: transform;
 }
@@ -201,11 +207,11 @@
   border-radius: 50%;
   color: #000;
   background: radial-gradient(circle at 50% 36%, #ffffff 0%, #ffffff 58%, #f0f0f2 100%);
-  border: 1px solid rgba(60, 60, 67, 0.17);
+  border: 1px solid rgba(60, 60, 67, 0.1);
   box-shadow:
     inset 0 2px 3px rgba(255, 255, 255, 1),
     inset 0 -4px 10px rgba(0, 0, 0, 0.035),
-    0 1px 2px rgba(0, 0, 0, 0.05);
+    0 2px 8px rgba(0, 0, 0, 0.05);
   touch-action: manipulation;
 }
 
@@ -378,43 +384,14 @@
   transform: none;
 }
 
-/* Outgoing call: no slide – the wallpaper cross-fades in over the keypad (from recorded frames) */
+/* Outgoing call: no slide – quick fade-in over the keypad */
 .call-screen.failed {
   transform: none;
   opacity: 0;
-  transition: opacity 0.55s cubic-bezier(0.3, 0.1, 0.2, 1);
+  transition: opacity 0.18s ease-out;
 }
 .call-screen.failed.is-open {
   opacity: 1;
-}
-.call-screen.failed .call-top,
-.call-screen.failed .incoming-actions {
-  opacity: 0;
-  transition: opacity 0.5s ease 0.12s;
-}
-.call-screen.failed.is-open .call-top,
-.call-screen.failed.is-open .incoming-actions {
-  opacity: 1;
-}
-/* silky light swirl that is visible mid-fade and then dissolves */
-.call-screen.failed::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  background:
-    radial-gradient(150% 62% at 8% 22%, transparent 58%, rgba(255, 255, 255, 0.28) 60%, transparent 68%),
-    radial-gradient(120% 70% at 105% 48%, transparent 56%, rgba(255, 255, 255, 0.22) 58%, transparent 67%),
-    radial-gradient(140% 60% at 0% 80%, transparent 60%, rgba(255, 255, 255, 0.2) 62%, transparent 70%);
-}
-.call-screen.failed.is-open::before {
-  animation: call-swirl 1.1s ease-out forwards;
-}
-@keyframes call-swirl {
-  0% { opacity: 0; }
-  30% { opacity: 1; }
-  100% { opacity: 0; }
 }
 
 /* "Call failed" – warm blurred wallpaper like the reference */
@@ -546,6 +523,29 @@
 .call-label {
   font-size: 14px;
   white-space: nowrap;
+}
+
+/* "Call Back": only the button reacts (shrinks + dims while held, then springs back) – no screen change */
+.cb-side .call-circle,
+.cb-side .call-label {
+  transition:
+    transform 0.12s ease-out,
+    opacity 0.12s ease-out;
+}
+.cb-side.down .call-circle {
+  transform: scale(0.875);
+  opacity: 0.5;
+}
+.cb-side.down .call-label {
+  opacity: 0.55;
+}
+.cb-side.release .call-circle {
+  animation: cb-release 0.34s ease-out;
+}
+@keyframes cb-release {
+  0% { transform: scale(0.875); opacity: 0.5; }
+  42% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .call-end-row {

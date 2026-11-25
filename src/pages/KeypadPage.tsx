@@ -157,7 +157,7 @@ export function KeypadPage() {
           onPointerCancel={callAnim.up}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <PhoneIcon size={34} />
+          <PhoneIcon size={37} />
         </button>
         <span className="dial-spacer">
           {number && (

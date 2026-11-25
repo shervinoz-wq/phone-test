@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Avatar } from '../components/Avatar'
 import { ChevronRightIcon, CheckIcon, CloseIcon, PlusCircleGreenIcon } from '../components/Icons'
-import { useApp } from '../hooks/useApp'
 import type { Contact } from '../types'
 import { uid } from '../utils/format'
 
@@ -25,7 +24,6 @@ const MORE_ROWS = [
 ]
 
 export function ContactForm({ contact, prefillNumber, title, onCancel, onSave, onDelete }: Props) {
-  const app = useApp()
   const [first, setFirst] = useState(contact?.first ?? '')
   const [last, setLast] = useState(contact?.last ?? '')
   const [company, setCompany] = useState(contact?.company ?? '')
@@ -38,7 +36,7 @@ export function ContactForm({ contact, prefillNumber, title, onCancel, onSave, o
   const [notes, setNotes] = useState(contact?.notes ?? '')
 
   const canSave = !!(first.trim() || last.trim() || company.trim() || phone.trim())
-  const unavailable = () => app.toast('Not available in this demo')
+  const unavailable = () => undefined
 
   const save = () => {
     if (!canSave) return

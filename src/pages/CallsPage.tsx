@@ -30,6 +30,7 @@ export function CallsPage() {
   const [selecting, setSelecting] = useState(false)
   const [editMenu, setEditMenu] = useState(false)
   const [filterMenu, setFilterMenu] = useState(false)
+  const [layout, setLayout] = useState<'classic' | 'unified'>('unified') // display only
   const [filterFrom, setFilterFrom] = useState<DOMRect | null>(null)
   const [editFrom, setEditFrom] = useState<DOMRect | null>(null)
   const [confirmClear, setConfirmClear] = useState(false)
@@ -215,22 +216,26 @@ export function CallsPage() {
       {/* Filter menu (top-right) */}
       <Menu open={filterMenu} anchor="right" morph morphFrom={filterFrom} onClose={() => setFilterMenu(false)}>
         <div className="layout-picker">
-          <button
-            type="button"
-            className="layout-option"
-            onClick={() => app.toast('Classic layout is not available in this demo')}
-          >
-            <ClassicLayoutIcon />
-            <span>Classic</span>
-            <span className="radio" />
-          </button>
-          <button type="button" className="layout-option" onClick={() => undefined}>
-            <UnifiedLayoutIcon />
-            <span>Unified</span>
-            <span className="radio on">
-              <CheckIcon size={16} />
-            </span>
-          </button>
+          {(
+            [
+              ['classic', 'Classic', <ClassicLayoutIcon key="c" active={layout === 'classic'} />],
+              ['unified', 'Unified', <UnifiedLayoutIcon key="u" active={layout === 'unified'} />],
+            ] as const
+          ).map(([id, label, icon]) => (
+            <button
+              key={id}
+              type="button"
+              className="layout-option"
+              onClick={() => {
+                setLayout(id) // visual only
+                setFilterMenu(false)
+              }}
+            >
+              {icon}
+              <span>{label}</span>
+              <span className={`radio${layout === id ? ' on' : ''}`}>{layout === id && <CheckIcon size={16} />}</span>
+            </button>
+          ))}
         </div>
         <MenuDivider />
         {(
@@ -257,7 +262,6 @@ export function CallsPage() {
           indent
           onClick={() => {
             setFilterMenu(false)
-            app.toast('Filtering is not available in this demo')
           }}
         >
           Manage Filtering

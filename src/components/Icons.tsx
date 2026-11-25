@@ -21,7 +21,7 @@ export const StarIcon = ({ size = 26, ...p }: P) => (
 export const ClockIcon = ({ size = 26, ...p }: P) => (
   <svg viewBox="0 0 24 24" fill="currentColor" {...base(size, p)}>
     <circle cx="12" cy="12" r="10" />
-    <path d="M12 6.8V12h4.4" fill="none" stroke="var(--tab-bg)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 6.8V12H7.6" fill="none" stroke="var(--tab-bg)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
 
@@ -69,7 +69,7 @@ export const GearIcon = ({ size = 26, ...p }: P) => (
 
 export const PhoneIcon = ({ size = 24, ...p }: P) => (
   <svg viewBox="0 0 24 24" fill="currentColor" {...base(size, p)}>
-    <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z" />
+    <path d="M3.91 3.44C3.67 3.62 3.63 3.71 3.53 3.85C3.43 3.99 3.41 4.13 3.31 4.26C3.21 4.39 3.02 4.49 2.93 4.64C2.84 4.78 2.81 4.89 2.74 5.12C2.68 5.36 2.59 5.74 2.56 6.06C2.52 6.38 2.51 6.73 2.52 7.03C2.52 7.34 2.54 7.67 2.59 7.90C2.64 8.13 2.75 8.19 2.82 8.42C2.89 8.65 2.82 8.81 3.01 9.28C3.19 9.75 3.74 10.82 3.94 11.23C4.15 11.64 4.14 11.60 4.24 11.76C4.35 11.91 4.47 12.00 4.58 12.17C4.69 12.34 4.74 12.57 4.88 12.77C5.02 12.97 5.24 13.15 5.40 13.37C5.57 13.59 5.70 13.89 5.85 14.08C6.00 14.27 6.16 14.33 6.30 14.49C6.45 14.65 6.50 14.81 6.72 15.05C6.93 15.30 7.45 15.78 7.62 15.95C7.78 16.13 7.62 16.03 7.69 16.10C7.76 16.17 7.83 16.17 8.03 16.37C8.23 16.56 8.67 17.07 8.89 17.27C9.11 17.46 9.11 17.34 9.34 17.53C9.57 17.71 10.05 18.21 10.28 18.39C10.50 18.57 10.51 18.48 10.69 18.61C10.87 18.75 11.16 19.05 11.36 19.18C11.56 19.31 11.69 19.27 11.89 19.40C12.09 19.53 12.09 19.70 12.56 19.96C13.04 20.23 14.11 20.74 14.74 20.98C15.36 21.21 15.82 21.31 16.31 21.39C16.80 21.47 17.27 21.48 17.66 21.46C18.05 21.44 18.37 21.37 18.67 21.28C18.97 21.18 19.19 21.06 19.46 20.90C19.73 20.74 20.08 20.48 20.28 20.30C20.49 20.13 20.56 20.03 20.69 19.85C20.83 19.67 20.99 19.43 21.11 19.21C21.23 19.00 21.35 18.74 21.41 18.54C21.46 18.34 21.48 18.18 21.44 18.01C21.41 17.85 21.33 17.71 21.22 17.57C21.11 17.42 20.94 17.27 20.77 17.12C20.60 16.97 20.37 16.78 20.21 16.67C20.04 16.55 19.99 16.58 19.79 16.44C19.60 16.30 19.23 15.93 19.05 15.80C18.86 15.67 18.83 15.76 18.67 15.65C18.51 15.55 18.28 15.31 18.07 15.17C17.86 15.02 17.58 14.87 17.43 14.79C17.28 14.72 17.33 14.73 17.17 14.72C17.02 14.70 16.73 14.67 16.50 14.72C16.26 14.77 16.03 14.87 15.75 15.02C15.46 15.17 15.07 15.46 14.77 15.62C14.47 15.77 14.22 15.90 13.95 15.95C13.68 16.00 13.45 16.00 13.16 15.92C12.87 15.83 12.80 15.91 12.22 15.47C11.65 15.02 10.35 13.90 9.71 13.26C9.08 12.61 8.67 11.94 8.40 11.57C8.13 11.20 8.18 11.22 8.10 11.04C8.02 10.87 7.95 10.68 7.92 10.52C7.88 10.36 7.90 10.23 7.92 10.11C7.93 9.99 7.83 10.14 8.03 9.81C8.22 9.47 8.87 8.46 9.08 8.08C9.28 7.71 9.23 7.73 9.26 7.56C9.30 7.38 9.35 7.27 9.30 7.03C9.26 6.80 9.21 6.55 9.00 6.17C8.79 5.79 8.45 5.32 8.03 4.75C7.60 4.17 6.80 3.10 6.45 2.72C6.10 2.35 6.09 2.53 5.93 2.50C5.77 2.47 5.65 2.49 5.48 2.54C5.31 2.58 5.18 2.61 4.92 2.76C4.65 2.91 4.14 3.26 3.91 3.44Z" />
   </svg>
 )
 
@@ -311,30 +311,37 @@ export const SilhouetteIcon = ({ size = 56, ...p }: P) => (
 )
 
 /** Layout thumbnails for the Calls filter menu. */
-export const ClassicLayoutIcon = () => (
-  <svg width="40" height="80" viewBox="0 0 40 80" aria-hidden>
-    <rect x="1.5" y="1.5" width="37" height="77" rx="7" fill="#f3f3f5" stroke="#8e8e93" strokeWidth="2" />
-    <rect x="14" y="4" width="12" height="3.5" rx="1.8" fill="#8e8e93" />
-    {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-      <rect key={i} x="6" y={12 + i * 7.5} width="28" height="5.5" rx="1.5" fill="#dcdce0" />
-    ))}
-    <rect x="5" y="69" width="30" height="5" rx="2.5" fill="#8e8e93" />
-  </svg>
-)
+/** Layout previews for the Calls filter menu; the selected one is drawn in blue, the other in grey. */
+export const ClassicLayoutIcon = ({ active = false }: { active?: boolean }) => {
+  const c = active ? '#0088ff' : '#8e8e93'
+  return (
+    <svg width="40" height="80" viewBox="0 0 40 80" aria-hidden>
+      <rect x="1.5" y="1.5" width="37" height="77" rx="7" fill={active ? '#f2f8ff' : '#f3f3f5'} stroke={c} strokeWidth={active ? 2.4 : 2} />
+      <rect x="14" y="4" width="12" height="3.5" rx="1.8" fill={c} />
+      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+        <rect key={i} x="6" y={12 + i * 7.5} width="28" height="5.5" rx="1.5" fill={active ? '#b9d8fb' : '#dcdce0'} />
+      ))}
+      <rect x="5" y="69" width="30" height="5" rx="2.5" fill={c} />
+    </svg>
+  )
+}
 
-export const UnifiedLayoutIcon = () => (
-  <svg width="40" height="80" viewBox="0 0 40 80" aria-hidden>
-    <rect x="1.5" y="1.5" width="37" height="77" rx="7" fill="#f2f8ff" stroke="#0088ff" strokeWidth="2.4" />
-    <rect x="14" y="4" width="12" height="3.5" rx="1.8" fill="#0088ff" />
-    {[0, 1, 2, 3].flatMap((r) =>
-      [0, 1, 2].map((c) => (
-        <rect key={`${r}${c}`} x={6 + c * 10} y={14 + r * 10} width="7.5" height="7" rx="1.5" fill="#b9d8fb" />
-      )),
-    )}
-    <rect x="5" y="66" width="24" height="7" rx="3.5" fill="#0088ff" />
-    <circle cx="33" cy="69.5" r="3.5" fill="#0088ff" />
-  </svg>
-)
+export const UnifiedLayoutIcon = ({ active = true }: { active?: boolean }) => {
+  const c = active ? '#0088ff' : '#8e8e93'
+  return (
+    <svg width="40" height="80" viewBox="0 0 40 80" aria-hidden>
+      <rect x="1.5" y="1.5" width="37" height="77" rx="7" fill={active ? '#f2f8ff' : '#f3f3f5'} stroke={c} strokeWidth={active ? 2.4 : 2} />
+      <rect x="14" y="4" width="12" height="3.5" rx="1.8" fill={c} />
+      {[0, 1, 2, 3].flatMap((r) =>
+        [0, 1, 2].map((col) => (
+          <rect key={`${r}${col}`} x={6 + col * 10} y={14 + r * 10} width="7.5" height="7" rx="1.5" fill={active ? '#b9d8fb' : '#dcdce0'} />
+        )),
+      )}
+      <rect x="5" y="66" width="24" height="7" rx="3.5" fill={c} />
+      <circle cx="33" cy="69.5" r="3.5" fill={c} />
+    </svg>
+  )
+}
 
 /** Light-grey filled delete key with a bold X (iOS 26 keypad). */
 export const BackspaceFilledIcon = ({ size = 31, ...p }: P) => (

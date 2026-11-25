@@ -9,6 +9,8 @@ const TABS: { id: TabId; label: string; Icon: ComponentType<{ size?: number }> }
 ]
 
 const PAD = 4 // padding of the glass bar (px)
+// glyph sizes measured from the original (circle icons ~21px, keypad grid ~22px wide)
+const ICON_SIZE: Record<TabId, number> = { calls: 25.5, contacts: 25.5, keypad: 28 }
 
 /**
  * Lens animation measured frame-by-frame from the iOS 26 tab bar
@@ -70,7 +72,7 @@ function TabVisual({ index, badge }: { index: number; badge: number }) {
   return (
     <>
       <span className="tab-icon">
-        <Icon size={23} />
+        <Icon size={ICON_SIZE[id]} />
         {id === 'calls' && badge > 0 && <span className="badge">{badge}</span>}
       </span>
       <span className="tab-label">{label}</span>

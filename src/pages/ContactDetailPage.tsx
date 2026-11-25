@@ -41,16 +41,16 @@ export function ContactDetailPage({ contact, backLabel, onBack }: Props) {
         </div>
 
         <div className="quick-actions round">
-          <button type="button" className="quick" aria-label="message" onClick={() => app.toast('Messages is not available in this demo')}>
+          <button type="button" className="quick" aria-label="message" onClick={() => undefined}>
             <MessageIcon size={22} />
           </button>
           <button type="button" className="quick" aria-label="call" onClick={() => app.startCall(contact.phone, contact.id)}>
             <PhoneIcon size={22} />
           </button>
-          <button type="button" className="quick" aria-label="video" onClick={() => app.toast('FaceTime is not available in this demo')}>
+          <button type="button" className="quick" aria-label="video" onClick={() => undefined}>
             <VideoIcon size={22} />
           </button>
-          <button type="button" className="quick" aria-label="mail" onClick={() => app.toast('Mail is not available in this demo')}>
+          <button type="button" className="quick" aria-label="mail" onClick={() => undefined}>
             <MailIcon size={22} />
           </button>
         </div>

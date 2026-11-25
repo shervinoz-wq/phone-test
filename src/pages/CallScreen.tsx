@@ -12,7 +12,6 @@ import {
   SpeakerIcon,
   VideoIcon,
 } from '../components/Icons'
-import { useApp } from '../hooks/useApp'
 import { useStore } from '../hooks/useStore'
 import { useTransitionMount } from '../hooks/useTransitionMount'
 import type { CallKind, CallSession } from '../types'
@@ -29,8 +28,7 @@ interface Props {
 
 export function CallScreen({ session, open, onEnd }: Props) {
   const { state } = useStore()
-  const app = useApp()
-  const { mounted, shown } = useTransitionMount(open, 380)
+  const { mounted, shown } = useTransitionMount(open, session.mode === 'incoming' ? 380 : 220)
 
   const contact = session.contactId
     ? state.contacts.find((c) => c.id === session.contactId)
@@ -44,6 +42,19 @@ export function CallScreen({ session, open, onEnd }: Props) {
   const [showKeypad, setShowKeypad] = useState(false)
   const [typed, setTyped] = useState('')
   const ended = useRef(false)
+  const [cb, setCb] = useState<'idle' | 'down' | 'release'>('idle')
+  const cbDownAt = useRef(0)
+  const cbTimer = useRef(0)
+  useEffect(() => () => window.clearTimeout(cbTimer.current), [])
+
+  // Tint the system top bar (iOS standalone / Android) with the call wallpaper while this screen is open.
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="theme-color"]')
+    if (!meta) return
+    const prev = meta.getAttribute('content') ?? '#ffffff'
+    meta.setAttribute('content', phase === 'failed' ? '#5d5047' : '#5a5c66')
+    return () => meta.setAttribute('content', prev)
+  }, [phase])
 
   // Call timer.
   useEffect(() => {
@@ -56,6 +67,24 @@ export function CallScreen({ session, open, onEnd }: Props) {
     if (ended.current) return
     ended.current = true
     onEnd({ kind, duration: phase === 'connected' ? seconds : 0 })
+  }
+
+  // Call Back: press animation only (min. visible hold so quick taps still show it)
+  const cbDown = () => {
+    window.clearTimeout(cbTimer.current)
+    cbDownAt.current = performance.now()
+    setCb('down')
+  }
+  const cbUp = () => {
+    if (cb !== 'down') return
+    const wait = Math.max(0, 110 - (performance.now() - cbDownAt.current))
+    cbTimer.current = window.setTimeout(() => setCb('release'), wait)
+  }
+  const cbClick = () => {
+    // keyboard activation (no pointer events)
+    if (cb !== 'idle') return
+    cbDown()
+    cbTimer.current = window.setTimeout(() => setCb('release'), 110)
   }
 
   const hangUp = () => finish(session.mode === 'incoming' ? (phase === 'connected' ? 'incoming' : 'missed') : 'outgoing')
@@ -112,9 +141,20 @@ export function CallScreen({ session, open, onEnd }: Props) {
             </button>
             <span className="call-label">Cancel</span>
           </div>
-          <div className="incoming-side">
-            <button type="button" className="call-circle green" aria-label="Call Back" onClick={() => setPhase('failed')}>
-              <PhoneIcon size={34} />
+          <div className={`incoming-side cb-side${cb === 'down' ? ' down' : cb === 'release' ? ' release' : ''}`} onAnimationEnd={() => setCb('idle')}>
+            <button
+              type="button"
+              className="call-circle green"
+              aria-label="Call Back"
+              onPointerDown={cbDown}
+              onPointerUp={cbUp}
+              onPointerLeave={cbUp}
+              onPointerCancel={cbUp}
+              onClick={(e) => {
+                if (e.detail === 0) cbClick()
+              }}
+            >
+              <PhoneIcon size={37} />
             </button>
             <span className="call-label">Call Back</span>
           </div>
@@ -129,7 +169,7 @@ export function CallScreen({ session, open, onEnd }: Props) {
           </div>
           <div className="incoming-side">
             <button type="button" className="call-circle green" aria-label="Accept" onClick={() => setPhase('connected')}>
-              <PhoneIcon size={32} />
+              <PhoneIcon size={35} />
             </button>
             <span className="call-label">Accept</span>
           </div>
@@ -156,9 +196,9 @@ export function CallScreen({ session, open, onEnd }: Props) {
               {toggle('mute', muted, setMuted, <MicOffIcon size={32} />)}
               {plain('keypad', <KeypadGlyph />, () => setShowKeypad(true))}
               {toggle('speaker', speaker, setSpeaker, <SpeakerIcon size={32} />)}
-              {plain('add call', <PersonPlusIcon size={30} />, () => app.toast('Add Call is not available in this demo'))}
-              {plain('FaceTime', <VideoIcon size={32} />, () => app.toast('FaceTime is not available in this demo'))}
-              {plain('contacts', <PersonCropIcon size={32} />, () => app.toast('Contacts are not available during the demo call'))}
+              {plain('add call', <PersonPlusIcon size={30} />, () => undefined)}
+              {plain('FaceTime', <VideoIcon size={32} />, () => undefined)}
+              {plain('contacts', <PersonCropIcon size={32} />, () => undefined)}
             </div>
           )}
 
