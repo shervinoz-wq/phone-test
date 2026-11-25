@@ -37,6 +37,12 @@ const TRACKS = {
 }
 const DURATION = T[T.length - 1]
 
+/** Press-and-hold (0.5 s) on the bar turns the selection into a free-moving glass lens. */
+const HOLD_MS = 500
+const HOLD_SLOP = 10 // px of finger travel that cancels the hold (it was a scroll / a normal tap)
+const GRAB = { w: 1.34, h: 1.12, mag: 1.2, glass: 1, box: 1.022 } // lens look while held (frame 3 above)
+const SETTLE_FROM = 120 // the release animation replays the tracks from here to the end
+
 /** Cubic Hermite through the keyframes with Catmull-Rom tangents (smooth, no stop at each frame). */
 function sample(values: number[], t: number): number {
   if (t <= 0) return values[0]
@@ -91,6 +97,7 @@ export function TabBar({ active, onChange, onSearch, missedBadge, hidden }: Prop
   const center = useRef<number | null>(null) // current lens centre (px, in the bar's coordinates)
   const raf = useRef(0)
   const index = TABS.findIndex((t) => t.id === active)
+  const drag = useRef({ timer: 0, id: -1, startX: 0, startY: 0, holding: false, suppressClick: false, skipEffect: false })
 
   const tabCenter = (i: number) => pad.current.x + ((geo.current.w - pad.current.x * 2) / 3) * (i + 0.5)
 
@@ -161,11 +168,108 @@ export function TabBar({ active, onChange, onSearch, missedBadge, hidden }: Prop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // x of a pointer event in the bar's own (unscaled) coordinates
+  const localX = (clientX: number) => {
+    const el = nav.current
+    if (!el) return 0
+    const r = el.getBoundingClientRect()
+    const k = el.clientWidth ? r.width / el.clientWidth : 1
+    return (clientX - r.left) / k
+  }
+  const clampCenter = (x: number) => Math.max(tabCenter(0), Math.min(tabCenter(TABS.length - 1), x))
+  const renderGrab = (cx: number) => {
+    center.current = cx
+    render(cx, GRAB.w, GRAB.h, GRAB.mag, GRAB.glass, GRAB.box)
+  }
+
+  // release: the lens settles on the nearest tab (same tail as the normal tab-change animation)
+  const settle = (from: number, to: number) => {
+    cancelAnimationFrame(raf.current)
+    const total = DURATION - SETTLE_FROM
+    const start = performance.now()
+    const step = (now: number) => {
+      const e = Math.min(now - start, total)
+      const k = 1 - Math.pow(1 - e / total, 3)
+      const t = SETTLE_FROM + e
+      const cx = from + (to - from) * k
+      center.current = cx
+      render(
+        cx,
+        sample(TRACKS.w, t),
+        sample(TRACKS.h, t),
+        sample(TRACKS.mag, t),
+        Math.max(0, Math.min(1, sample(TRACKS.glass, t))),
+        sample(TRACKS.box, t),
+      )
+      if (e < total) {
+        raf.current = requestAnimationFrame(step)
+      } else {
+        raf.current = 0
+        center.current = to
+        render(to)
+      }
+    }
+    raf.current = requestAnimationFrame(step)
+  }
+
+  const onPointerDown = (e: React.PointerEvent<HTMLElement>) => {
+    const d = drag.current
+    d.suppressClick = false
+    d.id = e.pointerId
+    d.startX = e.clientX
+    d.startY = e.clientY
+    window.clearTimeout(d.timer)
+    d.timer = window.setTimeout(() => {
+      d.holding = true
+      d.suppressClick = true
+      try {
+        nav.current?.setPointerCapture(d.id)
+      } catch {
+        /* pointer already gone */
+      }
+      cancelAnimationFrame(raf.current)
+      raf.current = 0
+      renderGrab(clampCenter(localX(d.startX)))
+    }, HOLD_MS)
+  }
+  const onPointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    const d = drag.current
+    if (e.pointerId !== d.id) return
+    if (d.holding) {
+      renderGrab(clampCenter(localX(e.clientX)))
+    } else if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) > HOLD_SLOP) {
+      window.clearTimeout(d.timer)
+    }
+  }
+  const onPointerEnd = (e: React.PointerEvent<HTMLElement>) => {
+    const d = drag.current
+    if (e.pointerId !== d.id) return
+    window.clearTimeout(d.timer)
+    d.id = -1
+    if (!d.holding) return
+    d.holding = false
+    const cx = clampCenter(localX(e.clientX))
+    let target = 0
+    for (let i = 1; i < TABS.length; i++) {
+      if (Math.abs(tabCenter(i) - cx) < Math.abs(tabCenter(target) - cx)) target = i
+    }
+    if (target !== index) {
+      d.skipEffect = true
+      onChange(TABS[target].id)
+    }
+    settle(cx, tabCenter(target))
+  }
+  useEffect(() => () => window.clearTimeout(drag.current.timer), [])
+
   // animate when the selected tab changes
   const first = useRef(true)
   useEffect(() => {
     if (first.current) {
       first.current = false
+      return
+    }
+    if (drag.current.skipEffect) {
+      drag.current.skipEffect = false
       return
     }
     const to = tabCenter(index)
@@ -205,7 +309,16 @@ export function TabBar({ active, onChange, onSearch, missedBadge, hidden }: Prop
 
   return (
     <div className={`tabbar-wrap${hidden ? ' hidden' : ''}`}>
-      <nav className="tabbar glass" aria-label="Main" ref={nav}>
+      <nav
+        className="tabbar glass"
+        aria-label="Main"
+        ref={nav}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerEnd}
+        onPointerCancel={onPointerEnd}
+        onContextMenu={(e) => e.preventDefault()}
+      >
         <div className="tab-row">
           {TABS.map(({ id }, i) => (
             <button
@@ -213,7 +326,13 @@ export function TabBar({ active, onChange, onSearch, missedBadge, hidden }: Prop
               type="button"
               className="tab"
               aria-current={active === id ? 'page' : undefined}
-              onClick={() => onChange(id)}
+              onClick={() => {
+                if (drag.current.suppressClick) {
+                  drag.current.suppressClick = false
+                  return
+                }
+                onChange(id)
+              }}
             >
               <TabVisual index={i} badge={missedBadge} />
             </button>

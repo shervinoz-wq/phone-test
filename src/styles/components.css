@@ -145,6 +145,7 @@
 }
 
 .tabbar {
+  touch-action: none;
   border-color: rgba(0, 0, 0, 0.06);
   background: rgba(255, 255, 255, 0.92);
   box-shadow:
@@ -290,15 +291,14 @@
 }
 
 .tab-icon.ti-keypad svg {
-  width: calc(52 * var(--s));
-  height: calc(52 * var(--s));
+  width: calc(40.5 * var(--s));
+  height: calc(40.5 * var(--s));
 }
 
 .tab-label {
-  font-size: calc(13.6 * var(--s));
+  font-size: calc(15 * var(--s));
   line-height: calc(15 * var(--s));
   font-weight: 600;
-  letter-spacing: 0.02em;
 }
 
 .search-btn {
@@ -802,6 +802,7 @@ button.card-row:active {
 
 .search-field {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -818,6 +819,46 @@ button.card-row:active {
 
 .search-field input::placeholder {
   color: var(--secondary);
+}
+
+.search-field input::-webkit-search-cancel-button,
+.search-field input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+.search-clear {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  opacity: 0.85;
+}
+
+.search-overlay .empty.center {
+  padding: 0 22px 0;
+}
+
+.search-overlay .empty-line {
+  display: block;
+}
+
+.search-overlay .empty-line.narrow {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.search-overlay .empty.center .empty-title {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.search-overlay .empty.center p {
+  font-size: 15px;
+  line-height: 20px;
 }
 
 .search-close {

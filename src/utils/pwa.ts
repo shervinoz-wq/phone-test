@@ -41,3 +41,30 @@ export function useOfflineStatus(): { offline: OfflineStatus; online: boolean } 
 
   return { offline, online }
 }
+
+/**
+ * Colour of the system bar (iOS status-bar area / Android top bar).
+ * Updates a fresh <meta name="theme-color"> (Safari only re-reads it when the node changes)
+ * and the page background behind the status bar. Returns a function that restores the previous colours.
+ */
+export function setSystemBarColor(color: string): () => void {
+  const head = document.head
+  const root = document.documentElement
+  const prevMeta = head.querySelector('meta[name="theme-color"]')
+  const prevColor = prevMeta?.getAttribute('content') ?? '#ffffff'
+  const prevRootBg = root.style.backgroundColor
+  const prevBodyBg = document.body.style.backgroundColor
+
+  const apply = (c: string, restoreInline: boolean) => {
+    head.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.remove())
+    const meta = document.createElement('meta')
+    meta.name = 'theme-color'
+    meta.content = c
+    head.appendChild(meta)
+    root.style.backgroundColor = restoreInline ? prevRootBg : c
+    document.body.style.backgroundColor = restoreInline ? prevBodyBg : c
+  }
+
+  apply(color, false)
+  return () => apply(prevColor, true)
+}

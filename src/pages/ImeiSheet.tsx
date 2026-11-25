@@ -34,7 +34,7 @@ function Barcode({ value, module }: { value: string; module: number }) {
 export function ImeiSheet({ onClose }: Props) {
   const { state } = useStore()
   const ids = state.settings.deviceIds
-  const IDS = (['eid', 'imei', 'imei2', 'meid'] as const).map((k) => ({
+  const IDS = (['imei', 'imei2'] as const).map((k) => ({
     label: k === 'imei2' ? 'IMEI2' : k.toUpperCase(),
     value: ids[k],
     module: MODULE[k],
@@ -47,7 +47,7 @@ export function ImeiSheet({ onClose }: Props) {
       <div ref={scroller} className="imei-scroll" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 44)}>
         <div ref={inner} className="imei-inner">
           <h1 className="imei-title">Share Device Identifiers</h1>
-          <p className="imei-sub">You can share EID and IMEIs by scanning the barcodes or holding iPhone near a reader.</p>
+          <p className="imei-sub">You can share IMEIs by scanning the barcodes.</p>
           {IDS.map((d) => (
             <section key={d.label} className="imei-block">
               <div className="imei-label">
@@ -65,11 +65,6 @@ export function ImeiSheet({ onClose }: Props) {
       <button type="button" className="imei-close" aria-label="Close" onClick={onClose}>
         <CloseIcon size={19} />
       </button>
-      <div className="imei-footer">
-        <button type="button" className="imei-reader" onClick={onClose}>
-          Use Reader to Share
-        </button>
-      </div>
     </div>
   )
 }

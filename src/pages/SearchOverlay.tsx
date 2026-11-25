@@ -65,7 +65,10 @@ function SearchBody({ open, shown, onClose }: Props & { shown: boolean }) {
         {empty ? (
           <div className="empty center">
             <div className="empty-title">No Results</div>
-            <p>Try a new search.</p>
+            <p>
+              <span className="empty-line">There were no results for “{query.trim()}”. Try a new search.</span>
+              <span className="empty-line narrow">More results will be shown once Phone finishes indexing.</span>
+            </p>
           </div>
         ) : (
           <>
@@ -130,6 +133,23 @@ function SearchBody({ open, shown, onClose }: Props & { shown: boolean }) {
             spellCheck={false}
             enterKeyHint="search"
           />
+          {query && (
+            <button
+              type="button"
+              className="search-clear"
+              aria-label="Clear text"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                setQuery('')
+                input.current?.focus()
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
+                <circle cx="10" cy="10" r="10" fill="#000" />
+                <path d="M6.6 6.6l6.8 6.8M13.4 6.6l-6.8 6.8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          )}
         </label>
         <button type="button" className="search-close glass" aria-label="Close search" onClick={onClose}>
           <CloseIcon size={22} />

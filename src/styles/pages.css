@@ -162,15 +162,17 @@
   column-gap: calc(31.5 * var(--s));
 }
 
-/* key rows: centres at y = 424, 573, 721.5, 870 (pitch 148.5) */
+/* Anchored to the BOTTOM (like the tab bar) so the gap to the tab bar matches the reference
+   whatever the real viewport height is (installed PWAs lose the status-bar height).
+   Reference: key rows centred at y = 424, 573, 721.5, 870 (pitch 148.5) of 1280. */
 .dial-grid {
-  top: calc(362.75 * var(--s));
+  bottom: calc(348.75 * var(--s));
   row-gap: calc(26 * var(--s));
 }
 
 /* call button centre at y = 1026 */
 .dial-actions {
-  top: calc(964.75 * var(--s));
+  bottom: calc(192.75 * var(--s));
   align-items: center;
 }
 
@@ -278,29 +280,16 @@
   padding-left: 0;
 }
 
-/* * and # are drawn as shapes so they look the same with SF Pro and with the fallback font */
-.dial-key .key-glyph {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: calc(4.2 * var(--s));
-  overflow: visible;
+/* * and # sit lower than the digits, like the iOS keypad */
+.dial-key[aria-label='pound'] .digit {
+  top: calc(33.75 * var(--s));
 }
 
-.dial-key .star-glyph {
-  width: calc(28 * var(--s));
-  height: calc(28 * var(--s));
-  stroke-width: 4.2;
-  transform: translate(-50%, -50%) translate(0, calc(1.2 * var(--s)));
-}
-
-.dial-key .hash-glyph {
-  width: calc(29 * var(--s));
-  height: calc(33 * var(--s));
-  stroke-width: 4.2;
-  transform: translate(-50%, -50%) translate(calc(-1 * var(--s)), calc(0.2 * var(--s)));
+.dial-key.star .digit {
+  top: calc(36 * var(--s));
+  font-size: calc(73 * var(--s));
+  line-height: calc(73 * var(--s));
+  height: calc(73 * var(--s));
 }
 
 .dial-key.dark {
@@ -653,7 +642,7 @@
 }
 
 .imei-inner {
-  padding: 88px 35px calc(var(--safe-bottom) + 118px);
+  padding: 91px 35px calc(var(--safe-bottom) + 118px);
   /* always a little scroll range, so the large title can collapse into the bar */
   min-height: calc(100% + 96px);
   will-change: transform;
@@ -699,7 +688,7 @@
 
 .imei-close {
   position: absolute;
-  top: 16px;
+  top: 19px;
   left: 17px;
   z-index: 3;
   display: flex;
@@ -719,6 +708,7 @@
 }
 
 .imei-footer {
+  display: none;
   position: absolute;
   left: 0;
   right: 0;
@@ -902,23 +892,101 @@
   transition-delay: 0s;
 }
 
-/* ---------- Contacts list (no sections, no index) ---------- */
+/* ---------- Contacts list (iOS 26: My Card, A–Z sections, side index) ----------
+   Sizes measured from a real iPhone screenshot (393pt wide). */
+.mycard-row {
+  display: flex;
+  align-items: center;
+  gap: 8.5px;
+  width: 100%;
+  height: 63px;
+  padding: 0 14.5px;
+  text-align: left;
+}
+
+.mycard-row:active {
+  background: rgba(118, 118, 128, 0.12);
+}
+
+.mycard-row .mycard-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mycard-row .mycard-name {
+  font-size: 17px;
+  line-height: 19px;
+  font-weight: 600;
+  color: #000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mycard-row .mycard-sub {
+  margin-top: 5px;
+  font-size: 17px;
+  line-height: 19px;
+  font-weight: 400;
+  color: #8e8e93;
+}
+
+.ct-section {
+  position: relative;
+}
+
+.ct-head {
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 2;
+  height: 36.5px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 400;
+  color: #8e8e93;
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
 .contact-list {
   background: transparent;
-  padding: 6px 0 0;
+  margin: 0;
+  padding: 0;
 }
 
 .contact-item {
+  position: relative;
   list-style: none;
+}
+
+/* hairline above every row; the first row's runs wider (starts at the section edge) */
+.contact-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 69px;
+  right: 17.5px;
+  height: 0.5px;
+  background: rgba(60, 60, 67, 0.2);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.contact-item:first-child::before {
+  left: 14.5px;
 }
 
 .contact-row {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 9.5px;
   width: 100%;
-  min-height: 56px;
-  padding: 8px 18px;
+  height: 58.75px;
+  padding: 0 17.5px 0 18px;
   text-align: left;
 }
 
@@ -927,12 +995,46 @@
 }
 
 .contact-name {
+  min-width: 0;
   font-size: 17px;
-  font-weight: 400;
+  font-weight: 600;
   color: #000;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* A–Z index on the right edge: 27 letters, 12.67pt pitch, centred between the nav bar and the tab bar */
+.ct-index {
+  position: absolute;
+  z-index: 6;
+  right: 0;
+  top: var(--nav-h);
+  bottom: calc(116 * 100cqw / 591);
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ct-index-letters {
+  display: flex;
+  flex-direction: column;
+  width: 11px;
+  margin-right: 0;
+}
+
+.ct-index-letters span {
+  display: block;
+  height: 12.67px;
+  line-height: 12.67px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--blue);
 }
 
 /* ---------- Lists page ---------- */
@@ -1628,4 +1730,85 @@
 
 .blue-detail .glass-btn:not(.round)::before {
   border-radius: 21px;
+}
+
+/* ---------- Outgoing call: "Please Wait..." then request error (measured from 497 x 1079 reference) ---------- */
+.req-screen {
+  --s: calc(100cqw / 497);
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  background: #515152;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.18s ease-out;
+}
+
+.req-screen.is-open {
+  opacity: 1;
+}
+
+.req-wait {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(516 * var(--s));
+  height: calc(24 * var(--s));
+  margin-top: calc(-12 * var(--s));
+  text-align: center;
+}
+
+.req-wait-text {
+  font-size: calc(18.5 * var(--s));
+  line-height: calc(24 * var(--s));
+  font-weight: 400;
+}
+
+.req-spinner {
+  position: absolute;
+  left: 50%;
+  top: calc(-14.6 * var(--s));
+  width: calc(26 * var(--s));
+  height: calc(26 * var(--s));
+  margin-left: calc(-13 * var(--s));
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  animation: req-spin 1s steps(8, end) infinite;
+}
+
+@keyframes req-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.req-error {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(134 * var(--s));
+  text-align: center;
+  font-size: calc(19 * var(--s));
+  line-height: calc(26 * var(--s));
+}
+
+.req-dismiss {
+  position: absolute;
+  left: calc(18 * var(--s));
+  right: calc(19 * var(--s));
+  bottom: calc(48 * var(--s));
+  height: calc(76 * var(--s));
+  border-radius: calc(7 * var(--s));
+  background: #fff;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(28 * var(--s));
+  font-weight: 400;
+}
+
+.req-dismiss:active {
+  background: #e4e4e4;
 }

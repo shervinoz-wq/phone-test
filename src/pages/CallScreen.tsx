@@ -16,9 +16,10 @@ import { useStore } from '../hooks/useStore'
 import { useTransitionMount } from '../hooks/useTransitionMount'
 import type { CallKind, CallSession } from '../types'
 import { clock, displayName, findByNumber } from '../utils/format'
+import { setSystemBarColor } from '../utils/pwa'
 import { playTone } from '../utils/sound'
 
-type Phase = 'calling' | 'connected' | 'incoming' | 'failed'
+type Phase = 'calling' | 'connected' | 'incoming' | 'failed' | 'loading' | 'error'
 
 interface Props {
   session: CallSession
@@ -35,7 +36,7 @@ export function CallScreen({ session, open, onEnd }: Props) {
     : findByNumber(state.contacts, session.number)
   const title = contact ? displayName(contact) : session.number
 
-  const [phase, setPhase] = useState<Phase>(session.mode === 'incoming' ? 'incoming' : 'failed')
+  const [phase, setPhase] = useState<Phase>(session.mode === 'incoming' ? 'incoming' : 'loading')
   const [seconds, setSeconds] = useState(0)
   const [muted, setMuted] = useState(false)
   const [speaker, setSpeaker] = useState(false)
@@ -49,11 +50,15 @@ export function CallScreen({ session, open, onEnd }: Props) {
 
   // Tint the system top bar (iOS standalone / Android) with the call wallpaper while this screen is open.
   useEffect(() => {
-    const meta = document.querySelector('meta[name="theme-color"]')
-    if (!meta) return
-    const prev = meta.getAttribute('content') ?? '#ffffff'
-    meta.setAttribute('content', phase === 'failed' ? '#5d5047' : '#5a5c66')
-    return () => meta.setAttribute('content', prev)
+    const tint = phase === 'loading' || phase === 'error' ? '#515152' : phase === 'failed' ? '#5d5047' : '#5a5c66'
+    return setSystemBarColor(tint)
+  }, [phase])
+
+  // Outgoing call: 2 s of "Please Wait…" and then the request error.
+  useEffect(() => {
+    if (phase !== 'loading') return
+    const id = window.setTimeout(() => setPhase('error'), 2000)
+    return () => window.clearTimeout(id)
   }, [phase])
 
   // Call timer.
@@ -90,6 +95,29 @@ export function CallScreen({ session, open, onEnd }: Props) {
   const hangUp = () => finish(session.mode === 'incoming' ? (phase === 'connected' ? 'incoming' : 'missed') : 'outgoing')
 
   if (!mounted) return null
+
+  if (phase === 'loading' || phase === 'error') {
+    return (
+      <div className={`req-screen${shown ? ' is-open' : ''}`} role="dialog" aria-label="Call">
+        {phase === 'loading' ? (
+          <div className="req-wait">
+            <Spinner />
+            <div className="req-wait-text">Please Wait...</div>
+          </div>
+        ) : (
+          <>
+            <div className="req-error">
+              <div>Error performing request</div>
+              <div>Unknown Error</div>
+            </div>
+            <button type="button" className="req-dismiss" onClick={() => finish('outgoing')}>
+              Dismiss
+            </button>
+          </>
+        )}
+      </div>
+    )
+  }
 
   const status =
     phase === 'calling'
@@ -218,6 +246,25 @@ export function CallScreen({ session, open, onEnd }: Props) {
         </div>
       )}
     </div>
+  )
+}
+
+// iOS-style activity indicator: 8 spokes, the bright head steps around the circle.
+function Spinner() {
+  return (
+    <svg className="req-spinner" viewBox="0 0 26 26" aria-hidden>
+      {Array.from({ length: 8 }, (_, i) => (
+        <line
+          key={i}
+          x1="13"
+          y1="2"
+          x2="13"
+          y2="6.7"
+          transform={`rotate(${i * 45} 13 13)`}
+          opacity={Math.max(0.45, 0.92 - i * 0.06)}
+        />
+      ))}
+    </svg>
   )
 }
 

@@ -43,17 +43,7 @@ export function DialKey({ digit, letters, onPress, onHold, dark }: Props) {
       onContextMenu={(e) => e.preventDefault()}
     >
       {!dark && <span ref={anim.fill} className="key-fill" aria-hidden />}
-      {digit === '*' ? (
-        <svg className="key-glyph star-glyph" viewBox="0 0 28 28" aria-hidden>
-          <path d="M14 0.7V27.3M2.5 7.4L25.5 20.6M25.5 7.4L2.5 20.6" />
-        </svg>
-      ) : digit === '#' ? (
-        <svg className="key-glyph hash-glyph" viewBox="0 0 29 32" aria-hidden>
-          <path d="M8.4 0.5V31.5M20.6 0.5V31.5M0.5 9.3H28.5M0.5 22.7H28.5" />
-        </svg>
-      ) : (
-        <span className="digit">{digit}</span>
-      )}
+      <span className="digit">{digit}</span>
       {letters && <span className="letters">{letters}</span>}
     </button>
   )
