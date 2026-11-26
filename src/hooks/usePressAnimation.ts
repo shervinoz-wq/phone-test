@@ -39,13 +39,13 @@ const KEY_FILL: Keyframe[] = [
 ]
 
 const CALL_BTN: Keyframe[] = [
-  { offset: 0, transform: 'scale(1)', backgroundColor: 'rgb(47,191,78)', easing: 'ease-out' },
+  { offset: 0, transform: 'scale(1)', backgroundColor: 'rgb(56,205,94)', easing: 'ease-out' },
   { offset: 0.12, transform: 'scale(1.085)', backgroundColor: 'rgb(23,254,76)', easing: 'ease-out' },
   { offset: PEAK, transform: 'scale(1.135)', backgroundColor: 'rgb(17,255,77)' },
   { offset: 0.5, transform: 'scale(1.11)', backgroundColor: 'rgb(22,255,76)', easing: 'ease-in' },
   { offset: 0.8, transform: 'scale(0.965)', backgroundColor: 'rgb(39,220,78)', easing: 'ease-out' },
   { offset: 0.9, transform: 'scale(0.975)', backgroundColor: 'rgb(39,213,78)', easing: 'ease-out' },
-  { offset: 1, transform: 'scale(1)', backgroundColor: 'rgb(47,191,78)' },
+  { offset: 1, transform: 'scale(1)', backgroundColor: 'rgb(56,205,94)' },
 ]
 
 export function usePressAnimation<T extends HTMLElement>(kind: PressKind, enabled = true) {

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { memo, useRef, useState } from 'react'
 import { usePressAnimation } from '../hooks/usePressAnimation'
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
   dark?: boolean
 }
 
-export function DialKey({ digit, letters, onPress, onHold, dark }: Props) {
+export const DialKey = memo(function DialKey({ digit, letters, onPress, onHold, dark }: Props) {
   const [down, setDown] = useState(false)
   const timer = useRef<number | undefined>(undefined)
   const anim = usePressAnimation<HTMLButtonElement>('key', !dark)
@@ -47,4 +47,4 @@ export function DialKey({ digit, letters, onPress, onHold, dark }: Props) {
       {letters && <span className="letters">{letters}</span>}
     </button>
   )
-}
+})

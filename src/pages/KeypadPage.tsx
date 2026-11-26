@@ -75,7 +75,15 @@ export function KeypadPage() {
     if (!number) stopDelete()
   }, [number])
 
+  const callPressed = useRef(false)
+
   const call = () => {
+    // Stop any key-press animations still running so they can't hog the main thread
+    // and delay the call screen.
+    document.getAnimations().forEach((a) => {
+      const t = (a.effect as KeyframeEffect | null)?.target as Element | null
+      if (t && t.closest?.('.dial-grid')) a.cancel()
+    })
     if (number) {
       app.startCall(number, match?.id)
       setNumber('')
@@ -155,11 +163,28 @@ export function KeypadPage() {
           type="button"
           className="call-btn"
           aria-label="Call"
-          onClick={call}
-          onPointerDown={callAnim.down}
-          onPointerUp={callAnim.up}
-          onPointerLeave={callAnim.up}
-          onPointerCancel={callAnim.up}
+          onClick={(e) => {
+            // keyboard activation only (detail === 0); pointer taps are handled on pointerup
+            if (e.detail === 0) call()
+          }}
+          onPointerDown={() => {
+            callPressed.current = true
+            callAnim.down()
+          }}
+          onPointerUp={() => {
+            const fire = callPressed.current
+            callPressed.current = false
+            callAnim.up()
+            if (fire) call() // fire the moment the finger lifts, not after the synthetic click
+          }}
+          onPointerLeave={() => {
+            callPressed.current = false
+            callAnim.up()
+          }}
+          onPointerCancel={() => {
+            callPressed.current = false
+            callAnim.up()
+          }}
           onContextMenu={(e) => e.preventDefault()}
         >
           <PhoneIcon size={37} />

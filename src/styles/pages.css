@@ -190,12 +190,9 @@
   width: var(--key);
   height: var(--key);
   border-radius: 50%;
-  background: rgb(105, 202, 107);
-  /* soft lighter rim, brighter towards the bottom edge (sampled from the reference) */
-  box-shadow:
-    inset 0 0 calc(7 * var(--s)) rgba(255, 255, 255, 0.28),
-    inset 0 calc(-5 * var(--s)) calc(8 * var(--s)) rgba(190, 255, 200, 0.35),
-    0 calc(3 * var(--s)) calc(10 * var(--s)) rgba(0, 0, 0, 0.04);
+  /* sampled from the original iPhone screenshot: flat rgb(56, 205, 94) */
+  background: rgb(56, 205, 94);
+  box-shadow: 0 calc(3 * var(--s)) calc(10 * var(--s)) rgba(0, 0, 0, 0.04);
   color: #fff;
   will-change: transform;
 }
@@ -642,7 +639,7 @@
 }
 
 .imei-inner {
-  padding: 91px 35px calc(var(--safe-bottom) + 118px);
+  padding: 89px 35px calc(var(--safe-bottom) + 118px) 34px;
   /* always a little scroll range, so the large title can collapse into the bar */
   min-height: calc(100% + 96px);
   will-change: transform;
@@ -650,7 +647,7 @@
 
 .imei-title {
   margin: 0;
-  font-size: 21px;
+  font-size: 20px;
   line-height: 25px;
   font-weight: 700;
   letter-spacing: -0.2px;
@@ -658,10 +655,10 @@
 
 .imei-sub {
   margin: 0;
-  font-size: 21px;
-  line-height: 26.5px;
+  font-size: 20px;
+  line-height: 26px;
   color: #8e8e93;
-  letter-spacing: -0.2px;
+  letter-spacing: -0.41px;
 }
 
 .imei-block {
@@ -670,20 +667,21 @@
 }
 
 .imei-title + .imei-sub + .imei-block {
-  margin-top: 31px;
+  margin-top: 32px;
 }
 
 .imei-label {
   height: 20px;
   line-height: 20px;
-  font-size: 15px;
+  font-size: 16px;
+  letter-spacing: -0.08px;
   white-space: nowrap;
   color: #000;
 }
 
 .imei-barcode {
   display: block;
-  margin: 25px auto 0;
+  margin: 24px auto 0;
 }
 
 .imei-close {

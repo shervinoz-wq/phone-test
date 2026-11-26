@@ -9,7 +9,7 @@ interface Props {
 }
 
 /** Barcode module width per identifier (the 32-digit EID is drawn narrower to fit). */
-const MODULE = { eid: 0.92, imei: 1.85, imei2: 1.85, meid: 1.85 } as const
+const MODULE = { eid: 0.92, imei: 1.82, imei2: 1.82, meid: 1.82 } as const
 
 function Barcode({ value, module }: { value: string; module: number }) {
   const { bars, modules } = barcodeBars(value)
@@ -17,15 +17,15 @@ function Barcode({ value, module }: { value: string; module: number }) {
     <svg
       className="imei-barcode"
       width={modules * module}
-      height={41}
-      viewBox={`0 0 ${modules} 41`}
+      height={40}
+      viewBox={`0 0 ${modules} 40`}
       preserveAspectRatio="none"
       shapeRendering="crispEdges"
       role="img"
       aria-label={`Barcode ${value}`}
     >
       {bars.map(([x, w]) => (
-        <rect key={x} x={x} y={0} width={w} height={41} fill="#000" />
+        <rect key={x} x={x} y={0} width={w} height={40} fill="#000" />
       ))}
     </svg>
   )
