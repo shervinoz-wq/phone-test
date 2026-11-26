@@ -1275,35 +1275,6 @@ button.card-row:active {
 }
 
 
-/* ---------- Red corner "demo" ribbon (bottom-right of the screen) ---------- */
-.demo-ribbon {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 88px;
-  height: 88px;
-  overflow: hidden;
-  z-index: 200;
-  pointer-events: none;
-}
-
-.demo-ribbon span {
-  position: absolute;
-  bottom: 17px;
-  right: -38px;
-  width: 130px;
-  padding: 2px 0;
-  transform: rotate(-45deg);
-  background: #e5202a;
-  color: #fff;
-  font: 700 8.5px/1.3 -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif;
-  letter-spacing: 0.4px;
-  text-align: center;
-  text-transform: uppercase;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-}
-
-
 /* Empty Contacts state: grey person avatar above the title */
 .empty-avatar {
   margin-bottom: 18px;

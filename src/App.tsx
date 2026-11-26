@@ -204,9 +204,6 @@ function Shell() {
               </span>
             </div>
             <div className="island" aria-hidden />
-            <div className="demo-ribbon" aria-hidden>
-              <span>ios dialer demo</span>
-            </div>
 
             <main className="panels">
               {tabs.map(([id, el]) => (
